@@ -482,13 +482,44 @@ export const HELPERS = [
 ];
 
 /**
- * REBIRTH CALCULATIONS (Renamed from Ascension)
- * Requires at least 1,000,000 (1M) lifetime vibes for the first Rebirth token!
- * Each permanent Golden Citrus grants +25% Global Vibes multiplicative bonus.
+ * REBIRTH PROGRESSION THRESHOLDS
+ * Strict single-rebirth non-stacking system:
+ * - Each life has a determined threshold of vibes to unlock Rebirth.
+ * - Players earn exactly +1 Rebirth token upon reaching the threshold.
+ * - If players continue playing past the threshold without rebirthing,
+ *   the pending token is strictly capped at 1 (no stacking).
+ * - Rebirthing resets the current run vibes and advances to the next tier!
  */
-export function calculateRebirthTokens(lifetimeVibes) {
-  if (lifetimeVibes < 1000000) return 0;
-  return Math.floor(Math.pow(lifetimeVibes / 1000000, 0.45));
+export const REBIRTH_THRESHOLDS = [
+  5000000, // Rebirth 1: 5M
+  30000000, // Rebirth 2: 30M
+  250000000, // Rebirth 3: 250M
+  2500000000, // Rebirth 4: 2.5B
+  35000000000, // Rebirth 5: 35B
+  500000000000, // Rebirth 6: 500B
+  8000000000000, // Rebirth 7: 8T
+  150000000000000, // Rebirth 8: 150T
+  2500000000000000, // Rebirth 9: 2.5Qa
+  50000000000000000, // Rebirth 10: 50Qa
+];
+
+export function getRebirthThreshold(rebirthCount = 0) {
+  const safeCount = Math.max(0, Math.floor(rebirthCount));
+  if (safeCount < REBIRTH_THRESHOLDS.length) {
+    return REBIRTH_THRESHOLDS[safeCount];
+  }
+  const maxDefined = REBIRTH_THRESHOLDS[REBIRTH_THRESHOLDS.length - 1];
+  const excess = safeCount - (REBIRTH_THRESHOLDS.length - 1);
+  return maxDefined * Math.pow(15, excess);
+}
+
+/**
+ * Returns pending tokens (strictly 0 or 1) based on current run vibes and rebirth count.
+ * Never stacks beyond 1!
+ */
+export function calculateRebirthTokens(runVibes = 0, rebirthCount = 0) {
+  const threshold = getRebirthThreshold(rebirthCount);
+  return runVibes >= threshold ? 1 : 0;
 }
 
 // Backwards-compatibility alias

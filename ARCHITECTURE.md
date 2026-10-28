@@ -82,6 +82,8 @@ The repository includes three complete agent skill suites under `.agents/skills/
 - **16 Helper Enterprises**: From rotating Döner spits and 5 AM Dürüm shacks to Dimçay river picnic rafts, Red Tower pirate foam party ships, and Seljuk cosmic sultan hover-bazaars.
 - **Multi-Hour Progression Curve**: Stretches idle economy through quadrillions ($10^{15}-10^{18}$), preventing fast max-outs.
 
-### 4.7 Alanya VIP Lagoon Rebirth System
+### 4.7 Alanya VIP Lagoon Rebirth System (Strict Single Non-Stacking Rebirths)
 - All references across state, UI, badges, modals, and toasts strictly use **Rebirth** (no "Ascend").
-- Requires a minimum of 1,000,000 lifetime vibes for the first Golden Citrus token, scaling as $\lfloor(\text{lifetimeVibes} / 10^6)^{0.45}\rfloor$. Each token yields +25% permanent Global Vibes.
+- **Strict Single Rebirth Per Run**: Players can only earn **exactly +1 Rebirth token at a time**. Rebirth tokens never stack to +2, +3, etc. in a single run.
+- **Determined Milestone Threshold**: Each rebirth tier has a determined requirement via `getRebirthThreshold(rebirthCount)` (5M for Rebirth 1, 30M for Rebirth 2, 250M for Rebirth 3, scaling upward).
+- **Run Vibes Reset**: Earning vibes past the determined threshold in a life does not grant extra rebirth value. Performing the Rebirth resets `runVibes` to 0, grants +1 Golden Citrus (+25% Global Vibes), and advances to the next Rebirth tier.

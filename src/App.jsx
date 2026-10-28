@@ -23,6 +23,8 @@ import {
   CAPY_QUOTES,
   MILESTONE_THRESHOLDS,
   formatNumber,
+  getRebirthThreshold,
+  calculateRebirthTokens,
 } from './data/gameData.js';
 import { soundEngine } from './audio/soundEngine.js';
 
@@ -151,6 +153,7 @@ export default function App() {
   // --- Core Persisted Game State ---
   const [vibes, setVibes] = useState(0);
   const [lifetimeVibes, setLifetimeVibes] = useState(0);
+  const [runVibes, setRunVibes] = useState(0);
   const [totalClicks, setTotalClicks] = useState(0);
   const [upgradeLevels, setUpgradeLevels] = useState({});
   const [helperCounts, setHelperCounts] = useState({});
@@ -201,6 +204,8 @@ export default function App() {
         const saved = JSON.parse(raw);
         if (typeof saved.vibes === 'number') setVibes(saved.vibes);
         if (typeof saved.lifetimeVibes === 'number') setLifetimeVibes(saved.lifetimeVibes);
+        if (typeof saved.runVibes === 'number') setRunVibes(saved.runVibes);
+        else if (typeof saved.vibes === 'number') setRunVibes(saved.vibes);
         if (typeof saved.totalClicks === 'number') setTotalClicks(saved.totalClicks);
         if (saved.upgradeLevels) setUpgradeLevels(saved.upgradeLevels);
         if (saved.helperCounts) setHelperCounts(saved.helperCounts);
@@ -220,6 +225,7 @@ export default function App() {
             if (earnedOffline > 0) {
               setVibes((v) => v + earnedOffline);
               setLifetimeVibes((lv) => lv + earnedOffline);
+              setRunVibes((rv) => rv + earnedOffline);
               setOfflineEarnings({
                 seconds: Math.floor(elapsedSec),
                 amount: earnedOffline,
@@ -332,8 +338,8 @@ export default function App() {
     const baseAndSynergyClick = flatClickBonus + totalCps * cpsToClickPct;
     const totalCpc = Math.max(1, baseAndSynergyClick * globalMultiplier * goldenClickMult);
 
-    const totalPotentialTokens = Math.floor(Math.sqrt(lifetimeVibes / 50000));
-    const pendingAscensionTokens = Math.max(0, totalPotentialTokens - ascensionTokens);
+    const rebirthThreshold = getRebirthThreshold(ascensionCount);
+    const pendingAscensionTokens = calculateRebirthTokens(runVibes, ascensionCount);
 
     // Calculate a virtual "Stage Level" like "Lagoon Lvl 125" in Clicker Heroes!
     const stageLevel = Math.max(1, Math.floor(Math.log10(Math.max(10, lifetimeVibes + 10)) * 18) - 17);
@@ -349,6 +355,7 @@ export default function App() {
       rageActive,
       totalHelpersOwned,
       pendingAscensionTokens,
+      rebirthThreshold,
       stageLevel,
     };
   }, [
@@ -356,6 +363,8 @@ export default function App() {
     weatherId,
     unlockedAchievements.length,
     ascensionTokens,
+    ascensionCount,
+    runVibes,
     frenzyRemaining,
     goldenBuff,
     helperCounts,
@@ -560,6 +569,7 @@ export default function App() {
 
       setVibes((v) => v + gain);
       setLifetimeVibes((lv) => lv + gain);
+      setRunVibes((rv) => rv + gain);
       setTotalClicks((c) => c + 1);
 
       soundEngine.playClick(isCrit, stats.isFrenzy);
@@ -624,6 +634,7 @@ export default function App() {
         const gain = stats.totalCps * dt;
         setVibes((v) => v + gain);
         setLifetimeVibes((lv) => lv + gain);
+        setRunVibes((rv) => rv + gain);
       }
 
       // Decay fever bar if not in frenzy
@@ -714,6 +725,7 @@ export default function App() {
     stateSnapshotRef.current = {
       vibes,
       lifetimeVibes,
+      runVibes,
       totalClicks,
       upgradeLevels,
       helperCounts,
@@ -815,6 +827,7 @@ export default function App() {
         const jackpot = Math.max(250, stats.totalCps * 22 + stats.totalCpc * 35);
         setVibes((v) => v + jackpot);
         setLifetimeVibes((lv) => lv + jackpot);
+        setRunVibes((rv) => rv + jackpot);
         spawnFloatingText(clientX, clientY, `GOLDEN JACKPOT +${formatNumber(jackpot)}!`, true, true);
         pushToast(
           'GOLDEN PIÑATA LLAMA JACKPOT!',
@@ -907,7 +920,7 @@ export default function App() {
   // --- Perform Rebirth ---
   const handleConfirmRebirth = useCallback(() => {
     if (stats.pendingAscensionTokens <= 0) return;
-    const claimed = stats.pendingAscensionTokens;
+    const claimed = 1; // Strict 1 rebirth at a time!
     if (soundEngine.playRebirth) {
       soundEngine.playRebirth();
     } else {
@@ -922,6 +935,7 @@ export default function App() {
     setAscensionTokens((t) => t + claimed);
     setAscensionCount((c) => c + 1);
     setVibes(0);
+    setRunVibes(0); // STRICT: resets run vibes! Extra vibes earned beyond threshold never carry over!
     setUpgradeLevels({});
     setHelperCounts({});
     setFeverPct(0);
@@ -929,12 +943,12 @@ export default function App() {
     setRebirthModalOpen(false);
 
     pushToast(
-      `REBIRTHED (+${claimed} GOLDEN CITRUS)!`,
-      `Permanent +${(ascensionTokens + claimed) * 25}% Global Vibes!`,
+      `REBIRTH #${ascensionCount + 1} COMPLETE (+1 GOLDEN CITRUS)!`,
+      `Permanent +${(ascensionTokens + 1) * 25}% Global Vibes! Rebirth #${ascensionCount + 2} unlocked!`,
       'yuzu',
       'from-amber-300 via-yellow-400 to-orange-500'
     );
-  }, [stats.pendingAscensionTokens, ascensionTokens, pushToast]);
+  }, [stats.pendingAscensionTokens, ascensionTokens, ascensionCount, pushToast]);
 
   // --- Toggle Mute ---
   const handleToggleMute = () => {
@@ -1080,6 +1094,7 @@ export default function App() {
           <ShopPanel
             vibes={vibes}
             lifetimeVibes={lifetimeVibes}
+            runVibes={runVibes}
             cps={stats.totalCps}
             cpc={stats.totalCpc}
             upgradeLevels={upgradeLevels}
@@ -1089,6 +1104,7 @@ export default function App() {
             weatherId={weatherId}
             unlockedAchievements={unlockedAchievements}
             ascensionTokens={ascensionTokens}
+            ascensionCount={ascensionCount}
             pendingAscensionTokens={stats.pendingAscensionTokens}
             buyMode={buyMode}
             onSetBuyMode={setBuyMode}
@@ -1347,9 +1363,18 @@ export default function App() {
             type="button"
             onClick={() => setRebirthModalOpen(true)}
             title="Open Alanya Lagoon Rebirth"
-            className="w-12 h-12 rounded-full bg-gradient-to-b from-[#fb7185] via-[#f43f5e] to-[#be123c] border-[2.5px] border-[#fde047] shadow-[0_3px_0_#881337] flex items-center justify-center hover:brightness-110 transition cursor-pointer"
+            className={`relative w-12 h-12 rounded-full border-[2.5px] border-[#fde047] shadow-[0_3px_0_#881337] flex items-center justify-center transition cursor-pointer ${
+              stats.pendingAscensionTokens > 0
+                ? 'bg-gradient-to-b from-[#10b981] via-[#059669] to-[#047857] animate-bounce shadow-[0_0_15px_rgba(74,222,128,0.7)]'
+                : 'bg-gradient-to-b from-[#fb7185] via-[#f43f5e] to-[#be123c] hover:brightness-110'
+            }`}
           >
             <GameIcon name="tab_rebirth" size={28} />
+            {stats.pendingAscensionTokens > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-full bg-[#fde047] text-black font-display font-black text-xs border border-black shadow">
+                +1
+              </span>
+            )}
           </button>
         </div>
 
@@ -1499,13 +1524,15 @@ export default function App() {
             id="rebirthDialogTitle"
             className="text-2xl font-display font-black text-[#fde047] [text-shadow:0_2px_0_#000]"
           >
-            Rebirth in the Alanya VIP Paradise?
+            Rebirth into Paradise? (Rebirth #{ascensionCount + 1})
           </h2>
           <p className="text-sm font-bold text-[#e0f2fe] mt-2 leading-relaxed">
-            Rebirth resets your current Vibes, Click Upgrades, and Helpers in exchange for{' '}
-            <strong className="text-[#fde047]">Permanent Golden Citrus</strong> (+25% Global Vibes
-            each). You keep all unlocked 3D Llama Evolutions & Badges!
+            Target: <strong className="text-[#fde047]">{formatNumber(getRebirthThreshold(ascensionCount))} Vibes</strong> in this run.
+            Rebirthing grants <strong className="text-[#fde047]">+1 Permanent Golden Citrus</strong> (+25% Global Vibes), resets your current run, and unlocks the path to Rebirth #{ascensionCount + 2}.
           </p>
+          <div className="mt-2 p-2 rounded-xl bg-[#041e30]/80 border border-[#38bdf8]/40 text-xs text-[#bae6fd] font-bold">
+            💡 <span className="text-amber-300">Single Rebirth Rule:</span> You can only earn 1 Rebirth per run. Rebirths do not stack — extra vibes in this life will not grant additional rebirths!
+          </div>
 
           <div className="mt-4 p-4 rounded-2xl bg-[#041e30] border-2 border-[#38bdf8] flex items-center justify-around">
             <div>
@@ -1522,7 +1549,7 @@ export default function App() {
                 New Permanent Bonus
               </p>
               <p className="text-2xl font-mono-num font-black text-emerald-400">
-                +{(ascensionTokens + stats.pendingAscensionTokens) * 25}%
+                +{(ascensionTokens + 1) * 25}%
               </p>
             </div>
           </div>
@@ -1545,7 +1572,9 @@ export default function App() {
                   : 'bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed'
               }`}
             >
-              Claim +{stats.pendingAscensionTokens} Golden Citrus
+              {stats.pendingAscensionTokens > 0
+                ? `Claim +1 Golden Citrus (Rebirth #${ascensionCount + 1})`
+                : 'Target Not Reached Yet'}
             </button>
           </div>
         </div>

@@ -9,6 +9,7 @@ import {
   ACHIEVEMENTS,
   MILESTONE_THRESHOLDS,
   formatNumber,
+  getRebirthThreshold,
 } from '../data/gameData.js';
 
 const HELPER_COST_GROWTH = 1.15;
@@ -122,6 +123,7 @@ function PedestalStatue({ icon, accentColor = '#fbbf24', badgeText = null, grays
 export default function ShopPanel({
   vibes = 0,
   lifetimeVibes = 0,
+  runVibes = 0,
   cps = 0,
   cpc = 1,
   upgradeLevels = {},
@@ -131,6 +133,7 @@ export default function ShopPanel({
   weatherId = 'sunny_onsen',
   unlockedAchievements = [],
   ascensionTokens = 0,
+  ascensionCount = 0,
   pendingAscensionTokens = 0,
   buyMode = 1,
   onSetBuyMode,
@@ -175,18 +178,22 @@ export default function ShopPanel({
     return evoCount + weatherCount;
   }, [unlockedEvolutionMax, lifetimeVibes]);
 
+  const rebirthThreshold = useMemo(() => {
+    return getRebirthThreshold(ascensionCount);
+  }, [ascensionCount]);
+
   const nextTokenProgress = useMemo(() => {
-    const currentTotalPotential = Math.floor(Math.sqrt(Math.max(0, lifetimeVibes) / 50000));
-    const currentThresholdVibes = Math.pow(currentTotalPotential, 2) * 50000;
-    const nextThresholdVibes = Math.pow(currentTotalPotential + 1, 2) * 50000;
-    const span = Math.max(1, nextThresholdVibes - currentThresholdVibes);
-    const pct = Math.min(100, Math.max(0, ((lifetimeVibes - currentThresholdVibes) / span) * 100));
+    const currentRun = Math.max(0, runVibes);
+    const threshold = rebirthThreshold;
+    const isUnlocked = currentRun >= threshold;
+    const pct = isUnlocked ? 100 : Math.min(100, Math.max(0, (currentRun / threshold) * 100));
     return {
       pct,
-      nextThresholdVibes,
-      remainingVibes: Math.max(0, nextThresholdVibes - lifetimeVibes),
+      nextThresholdVibes: threshold,
+      remainingVibes: Math.max(0, threshold - currentRun),
+      isUnlocked,
     };
-  }, [lifetimeVibes]);
+  }, [runVibes, rebirthThreshold]);
 
   const tabs = [
     {
@@ -221,9 +228,14 @@ export default function ShopPanel({
       id: 'rebirth',
       label: 'Rebirth',
       iconKey: 'tab_rebirth',
-      badge: pendingAscensionTokens > 0 ? `+${pendingAscensionTokens}` : null,
+      badge:
+        pendingAscensionTokens > 0
+          ? '+1'
+          : `${Math.floor(nextTokenProgress.pct)}%`,
       badgeColor:
-        'bg-gradient-to-b from-[#ec4899] to-[#be185d] text-white border-[#fbcfe8] animate-bounce',
+        pendingAscensionTokens > 0
+          ? 'bg-gradient-to-b from-[#10b981] to-[#047857] text-white border-[#a7f3d0] animate-bounce'
+          : 'bg-[#0f172a] text-[#7dd3fc] border-[#38bdf8]',
     },
   ];
 
@@ -310,7 +322,11 @@ export default function ShopPanel({
                 onClick={() => setActiveTab('rebirth')}
                 className="text-xs sm:text-sm font-bold text-[#fda4af] hover:text-[#fecdd3] transition-colors cursor-pointer truncate"
               >
-                Rebirth for <span className="font-mono-num text-[#fde047]">+{formatNumber(pendingAscensionTokens)}</span>
+                {pendingAscensionTokens > 0 ? (
+                  <span className="text-[#4ade80] font-black animate-pulse">Rebirth Ready! (+1)</span>
+                ) : (
+                  <span>Rebirth #{ascensionCount + 1}: <span className="font-mono-num text-[#fde047]">{Math.floor(nextTokenProgress.pct)}%</span></span>
+                )}
               </button>
             </div>
           </div>
@@ -860,7 +876,7 @@ export default function ShopPanel({
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex-1">
                     <span className="text-xs font-mono-num uppercase tracking-widest px-2.5 py-1 rounded-md bg-[#0c4a6e] text-[#fde047] border border-[#38bdf8] font-black">
-                      Alanya VIP Resort
+                      Alanya VIP Resort • Rebirth #{ascensionCount + 1}
                     </span>
                     <h3 className="text-white font-display font-black text-lg sm:text-xl mt-1.5 [text-shadow:0_2px_0_#082f49,0_3px_6px_rgba(0,0,0,0.9)]">
                       Alanya Lagoon Rebirth
@@ -870,9 +886,8 @@ export default function ShopPanel({
                 </div>
 
                 <p className="text-[#e0f2fe] font-bold text-xs sm:text-sm leading-relaxed mt-2 [text-shadow:0_1.5px_1px_#000]">
-                  Rebirth into the Mediterranean sunshine! Reset current Vibes, Upgrades, and Helpers to
-                  claim permanent <span className="text-[#fde047]">Golden Citrus</span> tokens (+25%
-                  Global Vibes each).
+                  Reach the target of <span className="text-[#fde047] font-mono-num font-black">{formatNumber(rebirthThreshold)} Vibes</span> in this run to unlock <span className="text-[#fde047] font-black">+1 Golden Citrus</span> (+25% Global Vibes).
+                  Rebirths do <strong className="text-white underline">not stack</strong> — you can only earn 1 Rebirth per run. Rebirth to claim and begin working toward Rebirth #{ascensionCount + 2}!
                 </p>
 
                 <div className="grid grid-cols-2 gap-2.5 mt-3">
@@ -889,23 +904,23 @@ export default function ShopPanel({
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-[#082f49] border-2 border-[#38bdf8] [text-shadow:0_1.5px_0_#000]">
+                  <div className={`p-3 rounded-xl bg-[#082f49] border-2 ${pendingAscensionTokens > 0 ? 'border-emerald-400' : 'border-[#38bdf8]'} [text-shadow:0_1.5px_0_#000]`}>
                     <div className="text-xs uppercase text-[#bae6fd] font-bold">
-                      Claim On Rebirth
+                      Available This Run
                     </div>
-                    <div className="font-mono-num font-black text-xl text-[#67e8f9] mt-1 flex items-center gap-2">
+                    <div className={`font-mono-num font-black text-xl mt-1 flex items-center gap-2 ${pendingAscensionTokens > 0 ? 'text-[#4ade80]' : 'text-[#67e8f9]'}`}>
                       <GameIcon name="sparkle" size={24} />
-                      <span>+{formatNumber(pendingAscensionTokens)}</span>
+                      <span>{pendingAscensionTokens > 0 ? '+1' : '0'}</span>
                     </div>
-                    <div className="text-xs font-bold text-[#fde047] mt-0.5">
-                      +{formatNumber(pendingAscensionTokens * 25)}% New Boost
+                    <div className={`text-xs font-bold mt-0.5 ${pendingAscensionTokens > 0 ? 'text-[#4ade80]' : 'text-[#fde047]'}`}>
+                      {pendingAscensionTokens > 0 ? '+25% Ready to Claim!' : `Need ${formatNumber(nextTokenProgress.remainingVibes)}`}
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-3 p-3 rounded-xl bg-[#082f49] border border-[#38bdf8]/50 [text-shadow:0_1px_0_#000]">
                   <div className="flex items-center justify-between text-xs sm:text-sm font-display font-black mb-1.5">
-                    <span className="text-white">Next Golden Token Progress</span>
+                    <span className="text-white">Rebirth #{ascensionCount + 1} Progress</span>
                     <span className="font-mono-num text-[#fde047]">
                       {Math.floor(nextTokenProgress.pct)}%
                     </span>
@@ -917,21 +932,41 @@ export default function ShopPanel({
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs text-[#bae6fd] font-mono-num font-bold mt-1.5">
-                    <span>Lifetime: {formatNumber(lifetimeVibes)}</span>
-                    <span>Goal: {formatNumber(nextTokenProgress.nextThresholdVibes)}</span>
+                    <span>This Run: {formatNumber(runVibes)}</span>
+                    <span>Target: {formatNumber(nextTokenProgress.nextThresholdVibes)}</span>
                   </div>
                 </div>
 
+                {/* Banner explaining non-stacking cap */}
+                {pendingAscensionTokens > 0 ? (
+                  <div className="p-2.5 rounded-xl bg-gradient-to-r from-emerald-950/80 to-teal-950/80 border-2 border-emerald-400 text-xs text-emerald-200 font-bold leading-snug">
+                    <span className="text-amber-300 font-black">⭐ REBIRTH READY (+1)!</span> Milestone reached for this run! Additional vibes in this run will <span className="text-white underline">not</span> give more rebirth value. Rebirth now to claim your +1 Golden Citrus and advance to Rebirth #{ascensionCount + 2}!
+                  </div>
+                ) : (
+                  <div className="p-2 rounded-xl bg-[#041e30]/80 border border-[#38bdf8]/40 text-xs text-[#bae6fd] font-medium leading-tight">
+                    🌴 Earn <span className="text-[#fde047] font-mono-num font-bold">{formatNumber(nextTokenProgress.remainingVibes)}</span> more Vibes in this life to unlock Rebirth #{ascensionCount + 1}.
+                  </div>
+                )}
+
                 <button
                   type="button"
+                  disabled={pendingAscensionTokens <= 0}
                   onClick={() => {
                     if (onOpenRebirthModal) onOpenRebirthModal();
                     else if (onOpenAscendModal) onOpenAscendModal();
                   }}
-                  className="mt-3.5 w-full py-3.5 px-4 rounded-xl bg-gradient-to-b from-[#22d3ee] via-[#0ea5e9] to-[#0284c7] hover:from-[#67e8f9] hover:to-[#0369a1] border-[2.5px] border-[#fde047] shadow-[inset_0_2px_0_rgba(255,255,255,0.75),0_4px_0_#0369a1] font-display font-black text-base tracking-wide text-[#fef08a] [text-shadow:0_2px_0_#000] flex items-center justify-center gap-2 cursor-pointer active:translate-y-0.5 transition-all"
+                  className={`mt-3.5 w-full py-3.5 px-4 rounded-xl border-[2.5px] font-display font-black text-base tracking-wide flex items-center justify-center gap-2 transition-all ${
+                    pendingAscensionTokens > 0
+                      ? 'bg-gradient-to-b from-[#22d3ee] via-[#0ea5e9] to-[#0284c7] hover:from-[#67e8f9] hover:to-[#0369a1] border-[#fde047] shadow-[inset_0_2px_0_rgba(255,255,255,0.75),0_4px_0_#0369a1] text-[#fef08a] [text-shadow:0_2px_0_#000] cursor-pointer active:translate-y-0.5 animate-pulse'
+                      : 'bg-[#1e293b] border-[#475569] text-[#94a3b8] cursor-not-allowed opacity-75'
+                  }`}
                 >
-                  <Flame className="w-5 h-5 text-[#fde047]" />
-                  <span>REBIRTH IN ALANYA (+{formatNumber(pendingAscensionTokens)})</span>
+                  <Flame className={`w-5 h-5 ${pendingAscensionTokens > 0 ? 'text-[#fde047]' : 'text-slate-500'}`} />
+                  <span>
+                    {pendingAscensionTokens > 0
+                      ? `REBIRTH IN ALANYA (+1 GOLDEN CITRUS)`
+                      : `REBIRTH LOCKED (${Math.floor(nextTokenProgress.pct)}%)`}
+                  </span>
                   <ChevronRight className="w-5 h-5 text-white" />
                 </button>
               </div>
