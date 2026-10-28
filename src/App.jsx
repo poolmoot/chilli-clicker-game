@@ -10,6 +10,8 @@ import {
 import ThreeStage from './components/ThreeStage.jsx';
 import ShopPanel, { calculateBulkHelperPurchase } from './components/ShopPanel.jsx';
 import BubbleNumber from './components/BubbleNumber.jsx';
+import ComicToast from './components/ComicToast.jsx';
+import AlanyaWelcomeScreen from './components/AlanyaWelcomeScreen.jsx';
 import { GameIcon } from './components/GameIcons.jsx';
 import {
   EVOLUTIONS,
@@ -178,6 +180,7 @@ export default function App() {
   const [, setNewsIndex] = useState(0);
   const [offlineEarnings, setOfflineEarnings] = useState(null);
   const [ascendModalOpen, setAscendModalOpen] = useState(false);
+  const [showAlanyaWelcome, setShowAlanyaWelcome] = useState(true);
 
   // --- Live Facial Expression Mood State (`chill` | `happy` | `crit` | `frenzy`) ---
   const [transientMood, setTransientMood] = useState(null);
@@ -228,6 +231,33 @@ export default function App() {
     } catch (err) {
       console.warn('Failed to parse save state:', err);
     }
+  }, []);
+
+  // --- Prevent accidental browser smart-zoom, double-tap zoom & trackpad pinch-zoom ---
+  useEffect(() => {
+    const handleWheel = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+      }
+    };
+    const handleGesture = (e) => e.preventDefault();
+    const handleDblClick = (e) => {
+      e.preventDefault();
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('gesturestart', handleGesture);
+    window.addEventListener('gesturechange', handleGesture);
+    window.addEventListener('gestureend', handleGesture);
+    document.addEventListener('dblclick', handleDblClick, { passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('gesturestart', handleGesture);
+      window.removeEventListener('gesturechange', handleGesture);
+      window.removeEventListener('gestureend', handleGesture);
+      document.removeEventListener('dblclick', handleDblClick);
+    };
   }, []);
 
   // --- Toast Helper ---
@@ -1402,25 +1432,10 @@ export default function App() {
           </button>
         </div>
 
-        {/* ---------- FLOATING TOAST NOTIFICATIONS (TOP RIGHT) ---------- */}
-        <div className="pointer-events-none absolute top-24 right-16 z-30 flex flex-col gap-2 max-w-xs">
+        {/* ---------- FLOATING CARTOON COMIC SPLASH NOTIFICATIONS (TOP RIGHT) ---------- */}
+        <div className="pointer-events-none absolute top-20 right-4 sm:right-10 z-40 flex flex-col items-end gap-2 max-w-xs sm:max-w-md">
           {toasts.map((t) => (
-            <div
-              key={t.id}
-              className="bg-[#0c4a6e]/95 border-2 border-[#fde047] rounded-2xl p-3 shadow-2xl flex items-center gap-3 animate-bounce"
-            >
-              <div
-                className={`w-11 h-11 rounded-xl bg-gradient-to-br ${t.accent} flex items-center justify-center shrink-0 border border-white/40 shadow`}
-              >
-                <GameIcon name={t.icon || 'sparkle'} size={28} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-display font-black text-[#fde047] truncate [text-shadow:0_1px_0_#000]">
-                  {t.title}
-                </p>
-                <p className="text-xs font-bold text-white leading-tight">{t.subtitle}</p>
-              </div>
-            </div>
+            <ComicToast key={t.id} toast={t} />
           ))}
         </div>
       </main>
@@ -1568,6 +1583,11 @@ export default function App() {
           </div>
         )}
       </dialog>
+
+      {/* ==================== "WELCOME TO ALANYA" SUMMER RESORT LOADING SCREEN ==================== */}
+      {showAlanyaWelcome && (
+        <AlanyaWelcomeScreen onComplete={() => setShowAlanyaWelcome(false)} />
+      )}
     </div>
   );
 }

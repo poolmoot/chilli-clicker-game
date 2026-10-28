@@ -239,6 +239,119 @@ function createPoolMosaicTexture() {
   return tex;
 }
 
+/**
+ * Procedural Cartoon Crown Splash Geometry (Matching user reference Image 4)
+ * Generates an authored 3D cartoon splash crown with sharp spires, outward curling tips,
+ * and vertex colors (ocean blue base -> vibrant cyan body -> pure white seafoam tips).
+ */
+function createCartoonCrownGeometry(radius = 1.1, height = 0.85, numSpires = 8) {
+  const segments = 48;
+  const geo = new THREE.BufferGeometry();
+  const positions = [];
+  const colors = [];
+  const indices = [];
+
+  const colBase = new THREE.Color(0x0284c7); // Deep ocean blue
+  const colBody = new THREE.Color(0x38bdf8); // Vibrant tropical cyan
+  const colFoam = new THREE.Color(0xffffff); // Seafoam white tip
+
+  // Ring 0: Submerged base ring at water level
+  for (let i = 0; i <= segments; i++) {
+    const a = (i / segments) * Math.PI * 2;
+    positions.push(Math.cos(a) * radius * 0.94, -0.05, Math.sin(a) * radius * 0.94);
+    colors.push(colBase.r, colBase.g, colBase.b);
+  }
+
+  // Ring 1: Mid splash body with outward flare
+  for (let i = 0; i <= segments; i++) {
+    const a = (i / segments) * Math.PI * 2;
+    const wave = Math.sin(a * numSpires);
+    const flare = 1.12 + wave * 0.08;
+    positions.push(Math.cos(a) * radius * flare, height * 0.42, Math.sin(a) * radius * flare);
+    colors.push(colBody.r, colBody.g, colBody.b);
+  }
+
+  // Ring 2: Spire tips (scalloped crests with outward curl)
+  for (let i = 0; i <= segments; i++) {
+    const a = (i / segments) * Math.PI * 2;
+    const wave = Math.sin(a * numSpires);
+    const spireNorm = Math.max(0, wave);
+    const tipH = height * (0.35 + spireNorm * 0.95);
+    const tipR = radius * (1.18 + spireNorm * 0.38);
+    positions.push(Math.cos(a) * tipR, tipH, Math.sin(a) * tipR);
+
+    const c = new THREE.Color().copy(colBody).lerp(colFoam, spireNorm * 0.92);
+    colors.push(c.r, c.g, c.b);
+  }
+
+  const ringSize = segments + 1;
+  for (let r = 0; r < 2; r++) {
+    for (let i = 0; i < segments; i++) {
+      const a = r * ringSize + i;
+      const b = a + 1;
+      const c = (r + 1) * ringSize + i;
+      const d = c + 1;
+      indices.push(a, c, b);
+      indices.push(b, c, d);
+    }
+  }
+
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+/**
+ * Procedural Cartoon Water Vortex Spiral Ribbon (Matching user reference Image 5)
+ * Generates an authored 3D water tornado spiral wrapping around the llama during stacked click frenzy.
+ */
+function createWaterVortexGeometry() {
+  const geo = new THREE.BufferGeometry();
+  const positions = [];
+  const colors = [];
+  const indices = [];
+  const steps = 64;
+  const turns = 2.4;
+
+  const colDeep = new THREE.Color(0x0284c7);
+  const colBright = new THREE.Color(0x38bdf8);
+  const colFoam = new THREE.Color(0xffffff);
+
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const angle = t * Math.PI * 2 * turns;
+    const r = 1.08 + t * 0.52;
+    const y = 0.12 + t * 1.35;
+
+    // Inner edge
+    positions.push(Math.cos(angle) * (r - 0.16), y, Math.sin(angle) * (r - 0.16));
+    const cIn = new THREE.Color().copy(colDeep).lerp(colBright, t);
+    colors.push(cIn.r, cIn.g, cIn.b);
+
+    // Outer edge with white foam crest
+    positions.push(Math.cos(angle) * (r + 0.14), y + 0.12, Math.sin(angle) * (r + 0.14));
+    const cOut = new THREE.Color().copy(colBright).lerp(colFoam, 0.9);
+    colors.push(cOut.r, cOut.g, cOut.b);
+  }
+
+  for (let i = 0; i < steps; i++) {
+    const a = i * 2;
+    const b = a + 1;
+    const c = a + 2;
+    const d = a + 3;
+    indices.push(a, c, b);
+    indices.push(b, c, d);
+  }
+
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+  return geo;
+}
+
 export default function ThreeStage({
   evolutionIndex = 0,
   helperCounts = {},
@@ -861,45 +974,45 @@ export default function ThreeStage({
     waterMesh.receiveShadow = true;
     islandGroup.add(waterMesh);
 
-    // --- 4B. Interactive Click Splash Wave Impulses & 3D Crown Splash Wave Rings ---
+    // --- 4B. Stylized Cartoon Water Splash System (Matching user reference Images 4 & 5) ---
     const waveImpulses = []; // { x, z, age, amp }
-    const splashWaveRings = [];
-    const splashRingMat = trackMat(
-      new THREE.MeshBasicMaterial({
-        color: 0xe0f2fe,
-        transparent: true,
-        opacity: 0.85,
+    let clickStack = 0; // Click combo stack tracker
+
+    const cartoonSplashMat = trackMat(
+      new THREE.MeshStandardMaterial({
+        vertexColors: true,
+        roughness: 0.18,
+        metalness: 0.04,
         side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.95,
       })
     );
 
-    for (let i = 0; i < 6; i++) {
-      const crownGeo = trackGeo(new THREE.CylinderGeometry(1.05, 0.85, 0.38, 32, 1, true));
-      const m = trackMat(splashRingMat.clone());
-      const ringMesh = new THREE.Mesh(crownGeo, m);
-      ringMesh.visible = false;
-      ringMesh.position.y = 0.18;
-      islandGroup.add(ringMesh);
-      splashWaveRings.push({
-        mesh: ringMesh,
-        mat: m,
-        active: false,
-        age: 0,
-        maxAge: 0.65,
-        intensity: 1,
-      });
-    }
+    // Sculpted Cartoon Crown Splashes with sharp spires & white foam crests (Image 4)
+    const crownSplashGeo1 = trackGeo(createCartoonCrownGeometry(1.08, 0.75, 8));
+    const crownSplashGeo2 = trackGeo(createCartoonCrownGeometry(1.24, 1.15, 6));
+    const crownSplash1 = new THREE.Mesh(crownSplashGeo1, cartoonSplashMat);
+    const crownSplash2 = new THREE.Mesh(crownSplashGeo2, cartoonSplashMat);
+    crownSplash1.position.y = 0.12;
+    crownSplash2.position.y = 0.12;
+    crownSplash1.visible = false;
+    crownSplash2.visible = false;
+    islandGroup.add(crownSplash1, crownSplash2);
+
+    // Cartoon Water Vortex Spiral Ribbon (Image 5)
+    const vortexGeo = trackGeo(createWaterVortexGeometry());
+    const waterVortexMesh = new THREE.Mesh(vortexGeo, cartoonSplashMat);
+    waterVortexMesh.position.y = 0.12;
+    waterVortexMesh.visible = false;
+    islandGroup.add(waterVortexMesh);
 
     const triggerSplashWaveRing = (intensity = 1.0) => {
-      waveImpulses.push({ x: 0, z: 0, age: 0, amp: 0.12 * intensity });
+      waveImpulses.push({ x: 0, z: 0, age: 0, amp: 0.15 * intensity });
       if (waveImpulses.length > 6) waveImpulses.shift();
 
-      const slot = splashWaveRings.find((r) => !r.active) || splashWaveRings[0];
-      slot.active = true;
-      slot.age = 0;
-      slot.maxAge = 0.64;
-      slot.intensity = intensity;
-      slot.mesh.visible = true;
+      // Surge click stack on every boop!
+      clickStack = Math.min(25, clickStack + intensity * 2.2);
     };
 
     // --- 4C. `threejs-procedural-vegetation` Twin Curved Coconut Palm Trees + Resort World Prop Kit ---
@@ -2304,23 +2417,45 @@ export default function ThreeStage({
       waterColorAttr.needsUpdate = true;
       gridWaterGeo.computeVertexNormals();
 
-      // Animate 3D Crown Splash Wave Rings surging up around the Llama
-      for (let i = 0; i < splashWaveRings.length; i++) {
-        const sr = splashWaveRings[i];
-        if (!sr.active) continue;
-        sr.age += dt;
-        if (sr.age >= sr.maxAge) {
-          sr.active = false;
-          sr.mesh.visible = false;
-          continue;
-        }
-        const p = sr.age / sr.maxAge;
-        const radiusScale = 0.75 + p * 1.25 * sr.intensity;
-        const heightArc = Math.sin(p * Math.PI) * (0.85 * sr.intensity);
-        sr.mesh.scale.set(radiusScale, Math.max(0.05, heightArc), radiusScale);
-        sr.mesh.position.y = 0.12 + heightArc * 0.14;
-        sr.mesh.rotation.y = elapsed * 2.5 + i;
-        sr.mat.opacity = (1 - p) * 0.75;
+      // --- Animate Stylized Cartoon Splashes on Stacked Clicks (Images 4 & 5) ---
+      clickStack = Math.max(0, clickStack - dt * 3.8);
+      if (curFrenzy) {
+        clickStack = Math.max(clickStack, 18);
+      }
+
+      // 1. Cartoon Crown Splash with spires and white foam (Image 4 top-left)
+      if (clickStack > 2.0) {
+        crownSplash1.visible = true;
+        const p1 = Math.min(1.0, (clickStack - 2.0) / 6.0);
+        const bounce1 = 0.88 + Math.sin(elapsed * 9.0) * 0.12 + p1 * 0.42;
+        const h1 = Math.max(0.08, p1 * 1.35);
+        crownSplash1.scale.set(bounce1, h1, bounce1);
+        crownSplash1.rotation.y = elapsed * 3.4;
+      } else {
+        crownSplash1.visible = false;
+      }
+
+      // 2. Towering Geyser Splash Wall (Image 4 top-right)
+      if (clickStack > 6.0) {
+        crownSplash2.visible = true;
+        const p2 = Math.min(1.0, (clickStack - 6.0) / 7.0);
+        const bounce2 = 0.9 + Math.cos(elapsed * 7.2) * 0.14 + p2 * 0.38;
+        const h2 = Math.max(0.1, p2 * 1.6);
+        crownSplash2.scale.set(bounce2, h2, bounce2);
+        crownSplash2.rotation.y = -elapsed * 2.9;
+      } else {
+        crownSplash2.visible = false;
+      }
+
+      // 3. Water Vortex Spiral (Image 5)
+      if (clickStack > 11.0) {
+        waterVortexMesh.visible = true;
+        const p3 = Math.min(1.0, (clickStack - 11.0) / 8.0);
+        const s3 = 0.85 + p3 * 0.38;
+        waterVortexMesh.scale.set(s3, Math.max(0.15, p3 * 1.35), s3);
+        waterVortexMesh.rotation.y += dt * (9.0 + p3 * 7.5);
+      } else {
+        waterVortexMesh.visible = false;
       }
 
       // Coupled Buoyancy: Donut & Llama bob and pitch with the exact center Gerstner wave!

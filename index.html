@@ -2,7 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <script>
+      // Prevent accidental browser smart-zoom / pinch-zoom on rapid clicking or trackpad gestures
+      window.addEventListener('wheel', function(e) {
+        if (e.ctrlKey || e.metaKey) e.preventDefault();
+      }, { passive: false });
+      window.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+      window.addEventListener('gesturechange', function(e) { e.preventDefault(); });
+      window.addEventListener('gestureend', function(e) { e.preventDefault(); });
+      document.addEventListener('dblclick', function(e) { e.preventDefault(); }, { passive: false });
+    </script>
     <title>CAPY CHILL CLICKER | Maximum Vibes Idle</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
