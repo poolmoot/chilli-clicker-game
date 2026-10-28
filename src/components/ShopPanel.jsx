@@ -138,6 +138,7 @@ export default function ShopPanel({
   onBuyHelper,
   onSelectEvolution,
   onSelectWeather,
+  onOpenRebirthModal,
   onOpenAscendModal,
 }) {
   const [activeTab, setActiveTab] = useState('upgrades');
@@ -217,9 +218,9 @@ export default function ShopPanel({
       badgeColor: 'bg-gradient-to-b from-[#10b981] to-[#047857] text-white border-[#a7f3d0]',
     },
     {
-      id: 'ascend',
-      label: 'Ascend',
-      iconKey: 'tab_ascend',
+      id: 'rebirth',
+      label: 'Rebirth',
+      iconKey: 'tab_rebirth',
       badge: pendingAscensionTokens > 0 ? `+${pendingAscensionTokens}` : null,
       badgeColor:
         'bg-gradient-to-b from-[#ec4899] to-[#be185d] text-white border-[#fbcfe8] animate-bounce',
@@ -306,10 +307,10 @@ export default function ShopPanel({
             <div className="flex items-center justify-end gap-1.5 text-right truncate">
               <button
                 type="button"
-                onClick={() => setActiveTab('ascend')}
+                onClick={() => setActiveTab('rebirth')}
                 className="text-xs sm:text-sm font-bold text-[#fda4af] hover:text-[#fecdd3] transition-colors cursor-pointer truncate"
               >
-                Ascend for <span className="font-mono-num text-[#fde047]">+{formatNumber(pendingAscensionTokens)}</span>
+                Rebirth for <span className="font-mono-num text-[#fde047]">+{formatNumber(pendingAscensionTokens)}</span>
               </button>
             </div>
           </div>
@@ -852,24 +853,24 @@ export default function ShopPanel({
             </div>
           )}
 
-          {/* TAB 5: ASCEND */}
-          {activeTab === 'ascend' && (
+          {/* TAB 5: REBIRTH */}
+          {activeTab === 'rebirth' && (
             <div className="space-y-3 pb-2">
               <div className="rounded-xl p-4 bg-gradient-to-b from-[#1e3a5f] via-[#172554] to-[#0f172a] border-[2.5px] border-[#38bdf8]/60 shadow-[inset_0_2px_0_rgba(125,211,252,0.45),0_4px_0_#090d16]">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex-1">
                     <span className="text-xs font-mono-num uppercase tracking-widest px-2.5 py-1 rounded-md bg-[#0c4a6e] text-[#fde047] border border-[#38bdf8] font-black">
-                      Tropical VIP Resort
+                      Alanya VIP Resort
                     </span>
                     <h3 className="text-white font-display font-black text-lg sm:text-xl mt-1.5 [text-shadow:0_2px_0_#082f49,0_3px_6px_rgba(0,0,0,0.9)]">
-                      Golden Lagoon Ascension
+                      Alanya Lagoon Rebirth
                     </h3>
                   </div>
-                  <PedestalStatue icon="tab_ascend" accentColor="#fde047" />
+                  <PedestalStatue icon="tab_rebirth" accentColor="#fde047" />
                 </div>
 
                 <p className="text-[#e0f2fe] font-bold text-xs sm:text-sm leading-relaxed mt-2 [text-shadow:0_1.5px_1px_#000]">
-                  Dive into the VIP Infinity Lagoon! Reset current Vibes, Upgrades, and Helpers to
+                  Rebirth into the Mediterranean sunshine! Reset current Vibes, Upgrades, and Helpers to
                   claim permanent <span className="text-[#fde047]">Golden Citrus</span> tokens (+25%
                   Global Vibes each).
                 </p>
@@ -890,7 +891,7 @@ export default function ShopPanel({
 
                   <div className="p-3 rounded-xl bg-[#082f49] border-2 border-[#38bdf8] [text-shadow:0_1.5px_0_#000]">
                     <div className="text-xs uppercase text-[#bae6fd] font-bold">
-                      Claim On Ascend
+                      Claim On Rebirth
                     </div>
                     <div className="font-mono-num font-black text-xl text-[#67e8f9] mt-1 flex items-center gap-2">
                       <GameIcon name="sparkle" size={24} />
@@ -923,11 +924,14 @@ export default function ShopPanel({
 
                 <button
                   type="button"
-                  onClick={() => onOpenAscendModal && onOpenAscendModal()}
+                  onClick={() => {
+                    if (onOpenRebirthModal) onOpenRebirthModal();
+                    else if (onOpenAscendModal) onOpenAscendModal();
+                  }}
                   className="mt-3.5 w-full py-3.5 px-4 rounded-xl bg-gradient-to-b from-[#22d3ee] via-[#0ea5e9] to-[#0284c7] hover:from-[#67e8f9] hover:to-[#0369a1] border-[2.5px] border-[#fde047] shadow-[inset_0_2px_0_rgba(255,255,255,0.75),0_4px_0_#0369a1] font-display font-black text-base tracking-wide text-[#fef08a] [text-shadow:0_2px_0_#000] flex items-center justify-center gap-2 cursor-pointer active:translate-y-0.5 transition-all"
                 >
                   <Flame className="w-5 h-5 text-[#fde047]" />
-                  <span>ASCEND TO VIP LAGOON (+{formatNumber(pendingAscensionTokens)})</span>
+                  <span>REBIRTH IN ALANYA (+{formatNumber(pendingAscensionTokens)})</span>
                   <ChevronRight className="w-5 h-5 text-white" />
                 </button>
               </div>

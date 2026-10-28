@@ -619,35 +619,538 @@ export function GameIcon({ name = 'yuzu', className = '', size = 28 }) {
           </>
         );
 
+      case 'tab_rebirth':
       case 'tab_ascend':
       case 'skill_smoothie':
         return (
           <>
             <defs>
-              <linearGradient id={`${uid}-drink`} x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#fde047" />
-                <stop offset="50%" stopColor="#fb923c" />
-                <stop offset="100%" stopColor="#e11d48" />
+              <linearGradient id={`${uid}-rebirth-wing`} x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#f59e0b" />
+                <stop offset="50%" stopColor="#ef4444" />
+                <stop offset="100%" stopColor="#fbbf24" />
               </linearGradient>
+              <radialGradient id={`${uid}-rebirth-core`} cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#ffffff" />
+                <stop offset="35%" stopColor="#fef08a" />
+                <stop offset="70%" stopColor="#f59e0b" />
+                <stop offset="100%" stopColor="#b45309" />
+              </radialGradient>
             </defs>
-            {/* Drinking Straw */}
-            <path d="M36 26 L43 10 L51 12" fill="none" stroke="#22d3ee" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-            {/* Cocktail Umbrella */}
-            <path d="M12 20 Q24 8 34 20 Z" fill="#ec4899" stroke="#2a1205" strokeWidth="2.8" strokeLinejoin="round" />
-            <line x1="23" y1="14" x2="27" y2="28" stroke="#78350f" strokeWidth="2.5" />
-            {/* Glass Bowl */}
+            {/* Radiant Sunburst Rays */}
+            <circle cx="32" cy="32" r="28" fill="none" stroke="#fde047" strokeWidth="2" strokeDasharray="3 4" opacity="0.6" />
+            {/* Phoenix / Rebirth Rising Wings */}
             <path
-              d="M15 24 H49 L43 44 C41 51, 23 51, 21 44 Z"
-              fill={`url(#${uid}-drink)`}
+              d="M18 46 C12 36, 10 22, 22 14 C25 24, 28 32, 32 38 C28 39, 22 43, 18 46 Z"
+              fill={`url(#${uid}-rebirth-wing)`}
               stroke="#2a1205"
-              strokeWidth="3.4"
+              strokeWidth="2.8"
+            />
+            <path
+              d="M46 46 C52 36, 54 22, 42 14 C39 24, 36 32, 32 38 C36 39, 42 43, 46 46 Z"
+              fill={`url(#${uid}-rebirth-wing)`}
+              stroke="#2a1205"
+              strokeWidth="2.8"
+            />
+            {/* Rebirth Ascending Crown / Diamond Flame */}
+            <path
+              d="M32 10 L37 24 L48 27 L38 34 L40 46 L32 40 L24 46 L26 34 L16 27 L27 24 Z"
+              fill={`url(#${uid}-rebirth-core)`}
+              stroke="#2a1205"
+              strokeWidth="2.8"
               strokeLinejoin="round"
             />
-            {/* Base */}
-            <rect x="23" y="50" width="18" height="5" rx="2.5" fill="#bae6fd" stroke="#2a1205" strokeWidth="2.8" />
-            {/* Citrus Garnish Wheel */}
-            <circle cx="48" cy="24" r="7" fill="#fde047" stroke="#2a1205" strokeWidth="2.5" />
-            <circle cx="48" cy="24" r="4" fill="#f97316" />
+            {/* Central Rebirth Orb */}
+            <circle cx="32" cy="30" r="7" fill="#ffffff" stroke="#ea580c" strokeWidth="2" />
+            <circle cx="32" cy="30" r="3" fill="#facc15" />
+            {/* Sparkle sparkles */}
+            <polygon points="32,4 34,8 38,10 34,12 32,16 30,12 26,10 30,8" fill="#ffffff" />
+          </>
+        );
+
+      case 'kebab':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-kebab-meat`} x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#451a03" />
+                <stop offset="25%" stopColor="#9a3412" />
+                <stop offset="55%" stopColor="#d97706" />
+                <stop offset="85%" stopColor="#78350f" />
+                <stop offset="100%" stopColor="#2a1205" />
+              </linearGradient>
+              <linearGradient id={`${uid}-spit-pole`} x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#cbd5e1" />
+                <stop offset="50%" stopColor="#f8fafc" />
+                <stop offset="100%" stopColor="#64748b" />
+              </linearGradient>
+            </defs>
+            {/* Stainless Steel Spit Shaft */}
+            <rect x="30" y="4" width="4" height="56" rx="2" fill={`url(#${uid}-spit-pole)`} stroke="#1e293b" strokeWidth="1.5" />
+            {/* Giant Stacked Doner Cone */}
+            <path
+              d="M16 16 C16 13, 48 13, 48 16 L44 48 C44 52, 20 52, 20 48 Z"
+              fill={`url(#${uid}-kebab-meat)`}
+              stroke="#2a1205"
+              strokeWidth="3.2"
+              strokeLinejoin="round"
+            />
+            {/* Stacked Meat Layer Grooves */}
+            <path d="M17 22 Q32 26 47 22" stroke="#451a03" strokeWidth="2.5" fill="none" />
+            <path d="M18 29 Q32 33 46 29" stroke="#451a03" strokeWidth="2.5" fill="none" />
+            <path d="M19 36 Q32 40 45 36" stroke="#451a03" strokeWidth="2.5" fill="none" />
+            <path d="M21 43 Q32 47 43 43" stroke="#451a03" strokeWidth="2.5" fill="none" />
+            {/* Juicy Meat Highlights */}
+            <ellipse cx="26" cy="25" rx="5" ry="1.8" fill="rgba(254,240,138,0.4)" />
+            <ellipse cx="27" cy="33" rx="5" ry="1.8" fill="rgba(254,240,138,0.4)" />
+            {/* Red Bell Pepper / Tomato Cap on top */}
+            <ellipse cx="32" cy="15" rx="14" ry="4.5" fill="#dc2626" stroke="#2a1205" strokeWidth="2.5" />
+            <circle cx="32" cy="14" r="2.5" fill="#15803d" />
+            {/* Bottom Catch Tray */}
+            <ellipse cx="32" cy="53" rx="18" ry="4" fill="#64748b" stroke="#1e293b" strokeWidth="2" />
+          </>
+        );
+
+      case 'durum':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-wrap-pita`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#fef3c7" />
+                <stop offset="50%" stopColor="#fde68a" />
+                <stop offset="100%" stopColor="#f59e0b" />
+              </linearGradient>
+              <linearGradient id={`${uid}-foil`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#f1f5f9" />
+                <stop offset="50%" stopColor="#cbd5e1" />
+                <stop offset="100%" stopColor="#94a3b8" />
+              </linearGradient>
+            </defs>
+            {/* Angled Durum Wrap Body */}
+            <g transform="rotate(-25 32 32)">
+              {/* Foil bottom */}
+              <path d="M20 32 L44 32 L41 54 C40 56, 24 56, 23 54 Z" fill={`url(#${uid}-foil)`} stroke="#1e293b" strokeWidth="2.8" />
+              <line x1="22" y1="42" x2="42" y2="42" stroke="#94a3b8" strokeWidth="1.5" />
+              {/* Lavas Bread Wrap upper */}
+              <path d="M19 14 C19 10, 45 10, 45 14 L44 34 L20 34 Z" fill={`url(#${uid}-wrap-pita)`} stroke="#2a1205" strokeWidth="3" />
+              {/* Toast Grill Marks */}
+              <line x1="23" y1="18" x2="41" y2="20" stroke="#b45309" strokeWidth="2" strokeLinecap="round" />
+              <line x1="22" y1="25" x2="42" y2="27" stroke="#b45309" strokeWidth="2" strokeLinecap="round" />
+              {/* Fillings protruding from the top */}
+              <ellipse cx="32" cy="14" rx="11" ry="5" fill="#78350f" stroke="#2a1205" strokeWidth="2" />
+              <circle cx="27" cy="12" r="3.5" fill="#ef4444" />
+              <circle cx="36" cy="11" r="3" fill="#22c55e" />
+              <ellipse cx="32" cy="13" rx="3" ry="2" fill="#eab308" />
+            </g>
+          </>
+        );
+
+      case 'pizza':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-pizza-crust`} x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#d97706" />
+                <stop offset="50%" stopColor="#b45309" />
+                <stop offset="100%" stopColor="#78350f" />
+              </linearGradient>
+              <linearGradient id={`${uid}-pizza-cheese`} x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#fef08a" />
+                <stop offset="40%" stopColor="#facc15" />
+                <stop offset="100%" stopColor="#ea580c" />
+              </linearGradient>
+            </defs>
+            {/* Slice Drop Shadow */}
+            <path d="M10 16 L54 16 L32 58 Z" fill="rgba(0,0,0,0.3)" />
+            {/* Puffy Golden Crust Top */}
+            <path
+              d="M10 16 C16 9, 48 9, 54 16 C55 21, 51 22, 47 21 C41 20, 23 20, 17 21 C13 22, 9 21, 10 16 Z"
+              fill={`url(#${uid}-pizza-crust)`}
+              stroke="#2a1205"
+              strokeWidth="3.2"
+              strokeLinejoin="round"
+            />
+            {/* Melted Cheese Slice Body */}
+            <path
+              d="M13 20 L51 20 L32 58 Z"
+              fill={`url(#${uid}-pizza-cheese)`}
+              stroke="#2a1205"
+              strokeWidth="3.2"
+              strokeLinejoin="round"
+            />
+            {/* Turkish Sucuk / Pepperoni slices */}
+            <circle cx="28" cy="27" r="5" fill="#991b1b" stroke="#450a0a" strokeWidth="2" />
+            <circle cx="27" cy="26" r="1.5" fill="#f87171" />
+            <circle cx="39" cy="32" r="4.5" fill="#991b1b" stroke="#450a0a" strokeWidth="2" />
+            <circle cx="38" cy="31" r="1.3" fill="#f87171" />
+            <circle cx="31" cy="42" r="3.8" fill="#991b1b" stroke="#450a0a" strokeWidth="1.8" />
+            {/* Oregano & Cheese String Drip */}
+            <circle cx="22" cy="34" r="1" fill="#15803d" />
+            <circle cx="36" cy="24" r="1" fill="#15803d" />
+            <circle cx="34" cy="48" r="0.9" fill="#15803d" />
+            <path d="M30 56 Q32 62 33 58" stroke="#facc15" strokeWidth="2.2" strokeLinecap="round" />
+          </>
+        );
+
+      case 'baklava':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-baklava-pastry`} x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#fef08a" />
+                <stop offset="35%" stopColor="#f59e0b" />
+                <stop offset="70%" stopColor="#d97706" />
+                <stop offset="100%" stopColor="#92400e" />
+              </linearGradient>
+              <linearGradient id={`${uid}-pistachio`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#86efac" />
+                <stop offset="50%" stopColor="#22c55e" />
+                <stop offset="100%" stopColor="#15803d" />
+              </linearGradient>
+            </defs>
+            {/* Diamond Cut Baklava (Isometric) */}
+            {/* Bottom Shadow */}
+            <polygon points="32,58 54,44 54,48 32,62 10,48 10,44" fill="rgba(0,0,0,0.35)" />
+            {/* Flaky Layers Base */}
+            <path
+              d="M10 32 L32 44 L54 32 L54 48 L32 60 L10 48 Z"
+              fill={`url(#${uid}-baklava-pastry)`}
+              stroke="#2a1205"
+              strokeWidth="3.2"
+              strokeLinejoin="round"
+            />
+            {/* Layer Lines (40 phyllo layers) */}
+            <line x1="10" y1="36" x2="32" y2="48" stroke="#78350f" strokeWidth="1.6" />
+            <line x1="32" y1="48" x2="54" y2="36" stroke="#78350f" strokeWidth="1.6" />
+            <line x1="10" y1="41" x2="32" y2="53" stroke="#78350f" strokeWidth="1.6" />
+            <line x1="32" y1="53" x2="54" y2="41" stroke="#78350f" strokeWidth="1.6" />
+            {/* Diamond Top Surface */}
+            <polygon
+              points="32,16 54,30 32,44 10,30"
+              fill="#fef08a"
+              stroke="#2a1205"
+              strokeWidth="3.2"
+              strokeLinejoin="round"
+            />
+            {/* Honey Syrup Gloss */}
+            <polygon points="32,20 48,30 32,38 16,30" fill="#fde047" opacity="0.6" />
+            {/* Bright Crushed Antep Pistachio Mountain */}
+            <ellipse cx="32" cy="29" rx="10" ry="5.5" fill={`url(#${uid}-pistachio)`} stroke="#14532d" strokeWidth="2" />
+            <circle cx="28" cy="27" r="1.3" fill="#ffffff" />
+            <circle cx="34" cy="28" r="1.4" fill="#ffffff" />
+            <circle cx="31" cy="31" r="1.2" fill="#ffffff" />
+            {/* Sweet Honey Drip */}
+            <path d="M22 40 C22 45, 25 45, 25 40" fill="#f59e0b" stroke="#78350f" strokeWidth="1.5" />
+          </>
+        );
+
+      case 'ice_cream':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-cone`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#fde68a" />
+                <stop offset="50%" stopColor="#f59e0b" />
+                <stop offset="100%" stopColor="#b45309" />
+              </linearGradient>
+              <radialGradient id={`${uid}-scoop`} cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stopColor="#ffffff" />
+                <stop offset="45%" stopColor="#fef08a" />
+                <stop offset="85%" stopColor="#facc15" />
+                <stop offset="100%" stopColor="#eab308" />
+              </radialGradient>
+            </defs>
+            {/* Long Maras Trickster Metal Scoop Stick */}
+            <line x1="12" y1="8" x2="52" y2="52" stroke="#64748b" strokeWidth="3.5" strokeLinecap="round" />
+            <line x1="12" y1="8" x2="22" y2="18" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+            {/* Waffle Cone */}
+            <polygon points="18,32 46,32 32,60" fill={`url(#${uid}-cone)`} stroke="#2a1205" strokeWidth="3" strokeLinejoin="round" />
+            <line x1="23" y1="37" x2="39" y2="47" stroke="#92400e" strokeWidth="1.6" />
+            <line x1="28" y1="44" x2="35" y2="53" stroke="#92400e" strokeWidth="1.6" />
+            <line x1="41" y1="37" x2="25" y2="47" stroke="#92400e" strokeWidth="1.6" />
+            {/* Maraş Stretchy Ice Cream Scoop with Twirl */}
+            <path
+              d="M17 32 C13 25, 17 14, 28 14 C30 9, 42 9, 44 16 C50 18, 51 28, 46 32 C43 35, 37 32, 32 34 C27 32, 21 35, 17 32 Z"
+              fill={`url(#${uid}-scoop)`}
+              stroke="#2a1205"
+              strokeWidth="3.2"
+              strokeLinejoin="round"
+            />
+            {/* Swirl Stretch Lines */}
+            <path d="M22 22 Q32 16 40 24" stroke="#d97706" strokeWidth="2" fill="none" />
+            <ellipse cx="26" cy="18" rx="4" ry="2" fill="rgba(255,255,255,0.7)" />
+          </>
+        );
+
+      case 'tea':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-tea-red`} x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#f87171" />
+                <stop offset="40%" stopColor="#dc2626" />
+                <stop offset="100%" stopColor="#7f1d1d" />
+              </linearGradient>
+              <linearGradient id={`${uid}-glass-edge`} x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(255,255,255,0.8)" />
+                <stop offset="50%" stopColor="rgba(255,255,255,0.2)" />
+                <stop offset="100%" stopColor="rgba(255,255,255,0.8)" />
+              </linearGradient>
+            </defs>
+            {/* Glass Saucer with Turkish Red Pattern */}
+            <ellipse cx="32" cy="54" rx="24" ry="6" fill="#f8fafc" stroke="#2a1205" strokeWidth="3" />
+            <ellipse cx="32" cy="54" rx="20" ry="4.5" fill="#ef4444" stroke="#dc2626" strokeWidth="1.2" />
+            <ellipse cx="32" cy="54" rx="14" ry="3" fill="#f8fafc" />
+            {/* Ince Belli Turkish Glass Waistline */}
+            <path
+              d="M21 16 Q20 28 26 34 Q32 40 24 50 L40 50 Q32 40 38 34 Q44 28 43 16 Z"
+              fill={`url(#${uid}-tea-red)`}
+              stroke="#2a1205"
+              strokeWidth="3.2"
+              strokeLinejoin="round"
+            />
+            {/* Glass Rim Top */}
+            <ellipse cx="32" cy="16" rx="11" ry="3.5" fill="#fca5a5" stroke="#2a1205" strokeWidth="2.8" />
+            {/* Glass Reflection Highlight */}
+            <path d="M23 20 Q22 28 27 34 Q29 36 27 46" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" fill="none" />
+            {/* Rising Steam Swirls */}
+            <path d="M30 11 Q28 6 31 2" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" fill="none" />
+            <path d="M35 12 Q38 7 35 3" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" fill="none" />
+          </>
+        );
+
+      case 'jet_ski':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-jetski-hull`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#06b6d4" />
+                <stop offset="50%" stopColor="#0891b2" />
+                <stop offset="100%" stopColor="#0e7490" />
+              </linearGradient>
+            </defs>
+            {/* Sea Splash Wake */}
+            <path d="M6 46 Q14 42 18 48 Q22 44 28 48" stroke="#67e8f9" strokeWidth="3" strokeLinecap="round" fill="none" />
+            <ellipse cx="12" cy="46" rx="4" ry="2" fill="#cffafe" />
+            {/* Jet Ski Sleek Body */}
+            <path
+              d="M10 44 L48 44 C54 44 58 40 54 36 L44 32 L22 32 L14 38 Z"
+              fill={`url(#${uid}-jetski-hull)`}
+              stroke="#0f172a"
+              strokeWidth="3"
+              strokeLinejoin="round"
+            />
+            {/* Orange Neon Accent & Seat */}
+            <path d="M20 32 L34 32 L38 36 L18 36 Z" fill="#f97316" stroke="#2a1205" strokeWidth="2" />
+            {/* Windshield & Handlebars */}
+            <path d="M36 32 L44 24 L48 27 L43 32 Z" fill="#38bdf8" stroke="#0f172a" strokeWidth="2" />
+            <line x1="34" y1="26" x2="37" y2="22" stroke="#1e293b" strokeWidth="3" strokeLinecap="round" />
+            {/* Speed Waves below */}
+            <path d="M14 50 Q28 46 42 50 Q52 46 58 50" stroke="#0284c7" strokeWidth="3.2" strokeLinecap="round" fill="none" />
+          </>
+        );
+
+      case 'cable_car':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-gondola`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ef4444" />
+                <stop offset="60%" stopColor="#dc2626" />
+                <stop offset="100%" stopColor="#991b1b" />
+              </linearGradient>
+            </defs>
+            {/* Overhead Steel Wire */}
+            <line x1="4" y1="10" x2="60" y2="18" stroke="#475569" strokeWidth="3" />
+            {/* Trolley Wheel & Arm */}
+            <circle cx="32" cy="14" r="3.5" fill="#94a3b8" stroke="#1e293b" strokeWidth="2" />
+            <path d="M32 17 L32 26 L26 28" stroke="#334155" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            {/* Rounded Gondola Cabin */}
+            <rect
+              x="16"
+              y="28"
+              width="32"
+              height="28"
+              rx="8"
+              fill={`url(#${uid}-gondola)`}
+              stroke="#2a1205"
+              strokeWidth="3.2"
+            />
+            {/* Panoramic Cyan Windows */}
+            <rect x="20" y="32" width="10" height="12" rx="3" fill="#bae6fd" stroke="#0369a1" strokeWidth="1.8" />
+            <rect x="34" y="32" width="10" height="12" rx="3" fill="#bae6fd" stroke="#0369a1" strokeWidth="1.8" />
+            <line x1="22" y1="41" x2="28" y2="35" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="36" y1="41" x2="42" y2="35" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
+          </>
+        );
+
+      case 'pirate_ship':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-ship-wood`} x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#92400e" />
+                <stop offset="60%" stopColor="#78350f" />
+                <stop offset="100%" stopColor="#451a03" />
+              </linearGradient>
+            </defs>
+            {/* Galleon Wooden Hull */}
+            <path
+              d="M10 40 C14 52, 46 52, 54 40 L58 36 L8 36 Z"
+              fill={`url(#${uid}-ship-wood)`}
+              stroke="#2a1205"
+              strokeWidth="3.2"
+              strokeLinejoin="round"
+            />
+            {/* Portholes */}
+            <circle cx="20" cy="42" r="2" fill="#facc15" stroke="#2a1205" strokeWidth="1.2" />
+            <circle cx="32" cy="42" r="2" fill="#facc15" stroke="#2a1205" strokeWidth="1.2" />
+            <circle cx="44" cy="42" r="2" fill="#facc15" stroke="#2a1205" strokeWidth="1.2" />
+            {/* Mast */}
+            <line x1="32" y1="10" x2="32" y2="36" stroke="#451a03" strokeWidth="3.5" strokeLinecap="round" />
+            {/* White Billowed Sail */}
+            <path
+              d="M20 16 Q32 12 44 16 Q38 28 32 30 Q24 28 20 16 Z"
+              fill="#f8fafc"
+              stroke="#2a1205"
+              strokeWidth="2.8"
+              strokeLinejoin="round"
+            />
+            {/* Pirate Flag with Skull */}
+            <rect x="32" y="8" width="12" height="7" fill="#0f172a" stroke="#2a1205" strokeWidth="1.5" />
+            <circle cx="37" cy="11.5" r="1.5" fill="#ffffff" />
+            {/* Waves */}
+            <path d="M6 50 Q16 46 26 50 Q36 46 46 50 Q56 46 62 50" stroke="#0284c7" strokeWidth="3" strokeLinecap="round" fill="none" />
+          </>
+        );
+
+      case 'sun':
+        return (
+          <>
+            <defs>
+              <radialGradient id={`${uid}-warm-sun`} cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stopColor="#fef08a" />
+                <stop offset="40%" stopColor="#facc15" />
+                <stop offset="85%" stopColor="#ea580c" />
+                <stop offset="100%" stopColor="#c2410c" />
+              </radialGradient>
+            </defs>
+            {/* 8 Bold Comic Rays */}
+            <path d="M32 4 L32 10 M32 54 L32 60 M4 32 L10 32 M54 32 L60 32 M12 12 L16 16 M48 48 L52 52 M12 52 L16 48 M48 16 L52 12" stroke="#f59e0b" strokeWidth="4.5" strokeLinecap="round" />
+            {/* Central Sun Circle */}
+            <circle cx="32" cy="32" r="16" fill={`url(#${uid}-warm-sun)`} stroke="#2a1205" strokeWidth="3.2" />
+            {/* Cool Sunglasses */}
+            <rect x="22" y="27" width="9" height="7" rx="3" fill="#0f172a" />
+            <rect x="33" y="27" width="9" height="7" rx="3" fill="#0f172a" />
+            <line x1="31" y1="30" x2="33" y2="30" stroke="#0f172a" strokeWidth="2.5" />
+            <line x1="23" y1="28" x2="29" y2="33" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round" />
+            {/* Big Grin */}
+            <path d="M27 38 Q32 42 37 38" stroke="#7c2d12" strokeWidth="2" strokeLinecap="round" fill="none" />
+          </>
+        );
+
+      case 'cloud':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-cloud`} x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#ffffff" />
+                <stop offset="70%" stopColor="#e0f2fe" />
+                <stop offset="100%" stopColor="#bae6fd" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M18 44 L46 44 C53 44 56 38 52 32 C54 24 45 18 38 22 C34 14 22 14 18 22 C10 23 9 34 16 38 Z"
+              fill={`url(#${uid}-cloud)`}
+              stroke="#0284c7"
+              strokeWidth="3.2"
+              strokeLinejoin="round"
+            />
+            <ellipse cx="25" cy="24" rx="4" ry="2" fill="#ffffff" opacity="0.8" />
+          </>
+        );
+
+      case 'cherry_blossom':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-sakura-petal`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#fdf2f8" />
+                <stop offset="50%" stopColor="#f472b6" />
+                <stop offset="100%" stopColor="#db2777" />
+              </linearGradient>
+            </defs>
+            {/* 5 Distinct Petals */}
+            {[0, 72, 144, 216, 288].map((angle, idx) => (
+              <path
+                key={idx}
+                d="M32 32 C26 18, 38 18, 32 32 Z"
+                transform={`rotate(${angle} 32 32)`}
+                fill={`url(#${uid}-sakura-petal)`}
+                stroke="#831843"
+                strokeWidth="2.2"
+              />
+            ))}
+            <circle cx="32" cy="32" r="5" fill="#fde047" stroke="#831843" strokeWidth="2" />
+          </>
+        );
+
+      case 'aurora_borealis':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-aurora`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#4ade80" />
+                <stop offset="50%" stopColor="#22d3ee" />
+                <stop offset="100%" stopColor="#a855f7" />
+              </linearGradient>
+            </defs>
+            <rect x="8" y="10" width="48" height="44" rx="8" fill="#0f172a" stroke="#2a1205" strokeWidth="2.8" />
+            <path d="M12 44 Q24 20 36 34 Q48 22 52 40" stroke={`url(#${uid}-aurora)`} strokeWidth="6" strokeLinecap="round" fill="none" opacity="0.9" />
+            <path d="M14 36 Q26 16 38 28 Q46 18 50 32" stroke="#a7f3d0" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.75" />
+            <circle cx="20" cy="18" r="1.5" fill="#ffffff" />
+            <circle cx="44" cy="16" r="1.5" fill="#ffffff" />
+          </>
+        );
+
+      case 'cosmic_nebula':
+        return (
+          <>
+            <defs>
+              <radialGradient id={`${uid}-nebula`} cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#f472b6" />
+                <stop offset="45%" stopColor="#818cf8" />
+                <stop offset="85%" stopColor="#1e1b4b" />
+                <stop offset="100%" stopColor="#0f172a" />
+              </radialGradient>
+            </defs>
+            <circle cx="32" cy="32" r="24" fill={`url(#${uid}-nebula)`} stroke="#2a1205" strokeWidth="3" />
+            <path d="M18 32 Q32 20 46 32 Q32 44 18 32 Z" fill="none" stroke="#67e8f9" strokeWidth="2.5" transform="rotate(35 32 32)" />
+            <circle cx="32" cy="32" r="4" fill="#ffffff" />
+            <polygon points="32,24 33,28 37,29 33,30 32,34 31,30 27,29 31,28" fill="#fef08a" />
+          </>
+        );
+
+      case 'water_bottle':
+        return (
+          <>
+            <defs>
+              <linearGradient id={`${uid}-bottle`} x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#38bdf8" />
+                <stop offset="40%" stopColor="#e0f2fe" />
+                <stop offset="100%" stopColor="#0284c7" />
+              </linearGradient>
+            </defs>
+            {/* Sports Cap */}
+            <rect x="28" y="10" width="8" height="6" rx="2" fill="#f97316" stroke="#2a1205" strokeWidth="2.2" />
+            {/* Bottle Body */}
+            <rect x="22" y="16" width="20" height="38" rx="6" fill={`url(#${uid}-bottle)`} stroke="#2a1205" strokeWidth="3.2" />
+            {/* Grip Ribs */}
+            <line x1="25" y1="28" x2="39" y2="28" stroke="#0284c7" strokeWidth="1.8" />
+            <line x1="25" y1="34" x2="39" y2="34" stroke="#0284c7" strokeWidth="1.8" />
+            <line x1="25" y1="40" x2="39" y2="40" stroke="#0284c7" strokeWidth="1.8" />
+            {/* Gloss shine */}
+            <path d="M25 20 L25 48" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" opacity="0.75" />
           </>
         );
 

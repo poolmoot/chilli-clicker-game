@@ -319,6 +319,10 @@ class SoundEngine {
   /**
    * Deep cosmic choir/chord swell.
    */
+  playRebirth() {
+    return this.playAscend();
+  }
+
   playAscend() {
     const ctx = this._initContext();
     if (!ctx) return;

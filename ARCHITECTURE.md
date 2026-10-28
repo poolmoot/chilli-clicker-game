@@ -1,7 +1,7 @@
 # Tropical Llama Lagoon Clicker — Codebase Architecture & Engineering Guide
 
 ## 1. Project Overview
-**Tropical Llama Lagoon Clicker** is a 3D Three.js + React 19 summer waterpark clicker game inspired by *Clicker Heroes* and CrazyGames idle hits. Players boop a chilled 3D Tropical Llama lounging in a strawberry-frosted sprinkle donut floatie inside a luxury travertine infinity-pool island, unlock 3D helper floaties and Llama evolutions, trigger active pool-splash skills, and ascend for permanent Golden Citrus multipliers.
+**Tropical Llama Lagoon Clicker (Alanya Summer Edition)** is a 3D Three.js + React 19 summer waterpark idle clicker game inspired by *Clicker Heroes*, *Cookie Clicker*, and Turkish Mediterranean resort vacation culture. Players boop a chilled 3D Alanya Llama lounging in a strawberry-frosted sprinkle donut floatie inside a luxury travertine infinity-pool island, unlock 16 tiers of Alanya food shacks and beach enterprises (Döner spits, Dürüm shacks, Baklava palaces, Teleferik cableways), buy 18 hilarious brainrot upgrades (Rizz, Mewing, Mogging), and execute **Alanya Rebirths** for permanent Golden Citrus multipliers.
 
 ---
 
@@ -31,7 +31,9 @@ The repository includes three complete agent skill suites under `.agents/skills/
 │   ├── data/
 │   │   └── gameData.js             # Evolutions, click upgrades, helpers, weathers, badges
 │   └── components/
+│       ├── AlanyaWelcomeScreen.jsx # Mediterranean summer loading screen with text shimmer
 │       ├── BubbleNumber.jsx        # Graffiti cartoon bubble numbers with 3D extrude & gloss shine
+│       ├── ComicToast.jsx          # Cartoon comic splash notification banners (Images 1-3)
 │       ├── GameIcons.jsx           # 100% custom multi-layer SVG vector game icon library
 │       ├── ShopPanel.jsx           # Left cabana shop tabs, pedestal statues & progression cards
 │       └── ThreeStage.jsx          # Full-viewport unclipped 3D Three.js WebGL world & Llama
@@ -74,3 +76,12 @@ The repository includes three complete agent skill suites under `.agents/skills/
 ### 4.5 Accessible, High-Craft Game UI (`threejs-game-ui-designer` & `modern-web-guidance`)
 - Zero standard OS text emojis: all icons are rendered via [`<GameIcon />`](file:///Users/bamsefar/Desktop/Chilli%20clicker%20game/src/components/GameIcons.jsx).
 - Uses dynamic viewport units (`h-dvh w-dvw`), `rem`-based and `clamp()` fluid typography, ≥44px interactive touch targets on stage carousel and active skill buttons, and native `<dialog closedby="any">` modals with light-dismiss fallback.
+
+### 4.6 Alanya Street Food, Brainrot Humor & 16 Helper Tiers
+- **18 Click Upgrades**: From Maraş Dondurma Rizz to Mewing at Cleopatra Beach, 40-Layer Pistachio Baklava, Grand Bazaar Genuine Fake Rolex, and Alanya Teleferik High-Altitude Mog.
+- **16 Helper Enterprises**: From rotating Döner spits and 5 AM Dürüm shacks to Dimçay river picnic rafts, Red Tower pirate foam party ships, and Seljuk cosmic sultan hover-bazaars.
+- **Multi-Hour Progression Curve**: Stretches idle economy through quadrillions ($10^{15}-10^{18}$), preventing fast max-outs.
+
+### 4.7 Alanya VIP Lagoon Rebirth System
+- All references across state, UI, badges, modals, and toasts strictly use **Rebirth** (no "Ascend").
+- Requires a minimum of 1,000,000 lifetime vibes for the first Golden Citrus token, scaling as $\lfloor(\text{lifetimeVibes} / 10^6)^{0.45}\rfloor$. Each token yields +25% permanent Global Vibes.

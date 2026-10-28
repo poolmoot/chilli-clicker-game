@@ -179,7 +179,7 @@ export default function App() {
   const [capyQuote, setCapyQuote] = useState('No drama, just a chilled pool llama.');
   const [, setNewsIndex] = useState(0);
   const [offlineEarnings, setOfflineEarnings] = useState(null);
-  const [ascendModalOpen, setAscendModalOpen] = useState(false);
+  const [rebirthModalOpen, setRebirthModalOpen] = useState(false);
   const [showAlanyaWelcome, setShowAlanyaWelcome] = useState(true);
 
   // --- Live Facial Expression Mood State (`chill` | `happy` | `crit` | `frenzy`) ---
@@ -190,7 +190,7 @@ export default function App() {
   const [skillTimers, setSkillTimers] = useState({});
 
   // --- Refs for Native <dialog> Modals ---
-  const ascendDialogRef = useRef(null);
+  const rebirthDialogRef = useRef(null);
   const offlineDialogRef = useRef(null);
 
   // --- Load Saved Game on Mount ---
@@ -400,16 +400,16 @@ export default function App() {
 
   // --- Sync Native <dialog> Modals (`showModal()` + `closedby="any"` + fallback) ---
   useEffect(() => {
-    const dialogEl = ascendDialogRef.current;
+    const dialogEl = rebirthDialogRef.current;
     if (!dialogEl) return;
-    const cleanup = attachDialogLightDismissFallback(dialogEl, () => setAscendModalOpen(false));
-    if (ascendModalOpen && !dialogEl.open) {
+    const cleanup = attachDialogLightDismissFallback(dialogEl, () => setRebirthModalOpen(false));
+    if (rebirthModalOpen && !dialogEl.open) {
       dialogEl.showModal();
-    } else if (!ascendModalOpen && dialogEl.open) {
+    } else if (!rebirthModalOpen && dialogEl.open) {
       dialogEl.close();
     }
     return cleanup;
-  }, [ascendModalOpen]);
+  }, [rebirthModalOpen]);
 
   useEffect(() => {
     const dialogEl = offlineDialogRef.current;
@@ -775,7 +775,7 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || ascendModalOpen || offlineEarnings) return;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || rebirthModalOpen || offlineEarnings) return;
 
       if (e.code === 'Space' && !e.repeat) {
         e.preventDefault();
@@ -792,7 +792,7 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleMascotClick, handleTriggerSkill, ascendModalOpen, offlineEarnings]);
+  }, [handleMascotClick, handleTriggerSkill, rebirthModalOpen, offlineEarnings]);
 
   // --- Handle Catching the 3D Flying Golden Piñata Llama ---
   const handleGoldenClick = useCallback(
@@ -904,14 +904,18 @@ export default function App() {
     [helperCounts, buyMode, vibes, pushToast]
   );
 
-  // --- Perform Ascension ---
-  const handleConfirmAscend = useCallback(() => {
+  // --- Perform Rebirth ---
+  const handleConfirmRebirth = useCallback(() => {
     if (stats.pendingAscensionTokens <= 0) return;
     const claimed = stats.pendingAscensionTokens;
-    soundEngine.playAscend();
+    if (soundEngine.playRebirth) {
+      soundEngine.playRebirth();
+    } else {
+      soundEngine.playAscend();
+    }
     confetti({
-      particleCount: 120,
-      spread: 100,
+      particleCount: 140,
+      spread: 110,
       origin: { x: 0.5, y: 0.45 },
     });
 
@@ -922,10 +926,10 @@ export default function App() {
     setHelperCounts({});
     setFeverPct(0);
     setFrenzyRemaining(0);
-    setAscendModalOpen(false);
+    setRebirthModalOpen(false);
 
     pushToast(
-      `ASCENDED (+${claimed} GOLDEN YUZU)!`,
+      `REBIRTHED (+${claimed} GOLDEN CITRUS)!`,
       `Permanent +${(ascensionTokens + claimed) * 25}% Global Vibes!`,
       'yuzu',
       'from-amber-300 via-yellow-400 to-orange-500'
@@ -1092,7 +1096,8 @@ export default function App() {
             onBuyHelper={handleBuyHelper}
             onSelectEvolution={setSelectedEvolution}
             onSelectWeather={setWeatherId}
-            onOpenAscendModal={() => setAscendModalOpen(true)}
+            onOpenRebirthModal={() => setRebirthModalOpen(true)}
+            onOpenAscendModal={() => setRebirthModalOpen(true)}
           />
         </div>
       </section>
@@ -1340,11 +1345,11 @@ export default function App() {
 
           <button
             type="button"
-            onClick={() => setAscendModalOpen(true)}
-            title="Open VIP Lagoon Ascension"
+            onClick={() => setRebirthModalOpen(true)}
+            title="Open Alanya Lagoon Rebirth"
             className="w-12 h-12 rounded-full bg-gradient-to-b from-[#fb7185] via-[#f43f5e] to-[#be123c] border-[2.5px] border-[#fde047] shadow-[0_3px_0_#881337] flex items-center justify-center hover:brightness-110 transition cursor-pointer"
           >
-            <GameIcon name="tab_ascend" size={28} />
+            <GameIcon name="tab_rebirth" size={28} />
           </button>
         </div>
 
@@ -1479,26 +1484,26 @@ export default function App() {
         ))}
       </div>
 
-      {/* ==================== NATIVE <dialog closedby="any"> ASCENSION MODAL ==================== */}
+      {/* ==================== NATIVE <dialog closedby="any"> REBIRTH MODAL ==================== */}
       <dialog
-        ref={ascendDialogRef}
+        ref={rebirthDialogRef}
         {...{ closedby: 'any' }}
-        aria-labelledby="ascendDialogTitle"
+        aria-labelledby="rebirthDialogTitle"
         className="m-auto rounded-3xl bg-gradient-to-b from-[#0c4a6e] to-[#082f49] text-white border-[4px] border-[#fde047] shadow-2xl p-0 max-w-md w-[92vw] backdrop:bg-black/75 backdrop:backdrop-blur-sm"
       >
         <div className="p-6 text-center">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 mx-auto flex items-center justify-center border-2 border-[#fde047] shadow-lg mb-4">
-            <GameIcon name="tab_ascend" size={42} />
+            <GameIcon name="tab_rebirth" size={42} />
           </div>
           <h2
-            id="ascendDialogTitle"
+            id="rebirthDialogTitle"
             className="text-2xl font-display font-black text-[#fde047] [text-shadow:0_2px_0_#000]"
           >
-            Ascend to the VIP Infinity Lagoon?
+            Rebirth in the Alanya VIP Paradise?
           </h2>
           <p className="text-sm font-bold text-[#e0f2fe] mt-2 leading-relaxed">
-            Ascending resets your current Vibes, Click Upgrades, and Helpers in exchange for{' '}
-            <strong className="text-[#fde047]">Permanent Golden Yuzus</strong> (+25% Global Vibes
+            Rebirth resets your current Vibes, Click Upgrades, and Helpers in exchange for{' '}
+            <strong className="text-[#fde047]">Permanent Golden Citrus</strong> (+25% Global Vibes
             each). You keep all unlocked 3D Llama Evolutions & Badges!
           </p>
 
@@ -1525,7 +1530,7 @@ export default function App() {
           <div className="mt-6 flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setAscendModalOpen(false)}
+              onClick={() => setRebirthModalOpen(false)}
               className="flex-1 py-3 rounded-xl bg-[#1e3a5f] hover:bg-[#1e40af] border-2 border-[#38bdf8] text-white font-black text-sm transition cursor-pointer"
             >
               Keep Splashing
@@ -1533,14 +1538,14 @@ export default function App() {
             <button
               type="button"
               disabled={stats.pendingAscensionTokens <= 0}
-              onClick={handleConfirmAscend}
+              onClick={handleConfirmRebirth}
               className={`flex-1 py-3 rounded-xl font-black text-sm border-2 transition cursor-pointer ${
                 stats.pendingAscensionTokens > 0
                   ? 'bg-gradient-to-b from-[#22d3ee] to-[#0284c7] border-[#fde047] text-white shadow-lg hover:brightness-110'
                   : 'bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed'
               }`}
             >
-              Claim +{stats.pendingAscensionTokens} Golden Yuzu
+              Claim +{stats.pendingAscensionTokens} Golden Citrus
             </button>
           </div>
         </div>
