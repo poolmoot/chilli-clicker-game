@@ -120,7 +120,7 @@ function PedestalStatue({ icon, accentColor = '#fbbf24', badgeText = null, grays
   );
 }
 
-export default function ShopPanel({
+function ShopPanel({
   vibes = 0,
   lifetimeVibes = 0,
   runVibes = 0,
@@ -977,3 +977,5 @@ export default function ShopPanel({
     </aside>
   );
 }
+
+export default React.memo(ShopPanel);

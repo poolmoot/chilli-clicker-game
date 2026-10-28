@@ -352,7 +352,7 @@ function createWaterVortexGeometry() {
   return geo;
 }
 
-export default function ThreeStage({
+function ThreeStage({
   evolutionIndex = 0,
   helperCounts = {},
   weatherId = 'sunny_onsen',
@@ -401,13 +401,16 @@ export default function ThreeStage({
     onGoldenClick,
   ]);
 
-  const helperSignature = JSON.stringify(helperCounts || {});
+  const helperSignature = useMemo(() => {
+    return JSON.stringify(helperCounts || {});
+  }, [helperCounts]);
+
   useEffect(() => {
     stateRef.current.helperCounts = helperCounts || {};
     if (rebuildOrbitersRef.current) {
       rebuildOrbitersRef.current(helperCounts || {});
     }
-  }, [helperSignature, helperCounts]);
+  }, [helperSignature]);
 
   useEffect(() => {
     if (externalClickPulse > 0 && triggerCenterBoopRef.current) {
@@ -920,8 +923,8 @@ export default function ThreeStage({
     // =========================================================================
     // 4. `threejs-water-optics` MULTI-WAVE OPAQUE LAGOON WATER + CREST FOAM
     // =========================================================================
-    // Subdivided 52x52 grid plane clamped to waterRadius circle (tucks under coping)
-    const WATER_SEGMENTS = 52;
+    // Optimized 34x34 grid plane clamped to waterRadius circle (tucks under coping)
+    const WATER_SEGMENTS = 34;
     const gridWaterGeo = trackGeo(
       new THREE.PlaneGeometry(3.6, 3.6, WATER_SEGMENTS, WATER_SEGMENTS)
     );
@@ -1994,46 +1997,60 @@ export default function ThreeStage({
       }
     };
 
+    // Shared reusable orbiter geometries (allocated once, zero leak!)
+    const sharedDuckBodyGeo = trackGeo(new THREE.SphereGeometry(0.15, 12, 10));
+    const sharedDuckHeadGeo = trackGeo(new THREE.SphereGeometry(0.1, 10, 8));
+    const sharedBeakGeo = trackGeo(new THREE.ConeGeometry(0.045, 0.11, 8));
+    sharedBeakGeo.rotateZ(-Math.PI / 2);
+    const sharedPouchGeo = trackGeo(new THREE.ConeGeometry(0.085, 0.24, 8));
+    sharedPouchGeo.rotateZ(-Math.PI / 2);
+    const sharedOrbCoreGeo = trackGeo(new THREE.OctahedronGeometry(0.15, 1));
+    const sharedOrbRingGeo = trackGeo(new THREE.TorusGeometry(0.22, 0.025, 8, 18));
+    sharedOrbRingGeo.rotateX(Math.PI / 3);
+
+    const orbiterMatMap = new Map();
+    const getCachedOrbiterMat = (colorHex, isAccent, accentHex) => {
+      const key = `${colorHex}_${isAccent}_${accentHex}`;
+      if (orbiterMatMap.has(key)) return orbiterMatMap.get(key);
+      const m = trackMat(
+        isAccent
+          ? new THREE.MeshStandardMaterial({
+              color: accentHex,
+              emissive: accentHex,
+              emissiveIntensity: 0.3,
+              roughness: 0.35,
+            })
+          : new THREE.MeshStandardMaterial({
+              color: colorHex,
+              roughness: 0.38,
+              metalness: 0.15,
+            })
+      );
+      orbiterMatMap.set(key, m);
+      return m;
+    };
+
     const createHelperMiniMesh = (spec) => {
       const holder = new THREE.Group();
-      const mainMat = trackMat(
-        new THREE.MeshStandardMaterial({
-          color: spec.color,
-          roughness: 0.38,
-          metalness: 0.15,
-        })
-      );
-      const accentMat = trackMat(
-        new THREE.MeshStandardMaterial({
-          color: spec.accent,
-          emissive: spec.accent,
-          emissiveIntensity: 0.3,
-          roughness: 0.35,
-        })
-      );
+      const mainMat = getCachedOrbiterMat(spec.color, false, 0);
+      const accentMat = getCachedOrbiterMat(spec.color, true, spec.accent);
 
       if (spec.type === 'duck') {
-        const body = new THREE.Mesh(trackGeo(new THREE.SphereGeometry(0.15, 14, 14)), mainMat);
+        const body = new THREE.Mesh(sharedDuckBodyGeo, mainMat);
         body.scale.set(1.2, 0.85, 1);
-        const head = new THREE.Mesh(trackGeo(new THREE.SphereGeometry(0.1, 12, 12)), mainMat);
+        const head = new THREE.Mesh(sharedDuckHeadGeo, mainMat);
         head.position.set(0.11, 0.13, 0);
-        const beak = new THREE.Mesh(trackGeo(new THREE.ConeGeometry(0.045, 0.11, 8)), accentMat);
-        beak.rotation.z = -Math.PI / 2;
+        const beak = new THREE.Mesh(sharedBeakGeo, accentMat);
         beak.position.set(0.22, 0.13, 0);
         holder.add(body, head, beak);
       } else if (spec.type === 'pelican') {
-        const body = new THREE.Mesh(trackGeo(new THREE.SphereGeometry(0.15, 14, 14)), mainMat);
-        const pouch = new THREE.Mesh(trackGeo(new THREE.ConeGeometry(0.085, 0.24, 10)), accentMat);
-        pouch.rotation.z = -Math.PI / 2;
+        const body = new THREE.Mesh(sharedDuckBodyGeo, mainMat);
+        const pouch = new THREE.Mesh(sharedPouchGeo, accentMat);
         pouch.position.set(0.2, 0.04, 0);
         holder.add(body, pouch);
       } else {
-        const core = new THREE.Mesh(trackGeo(new THREE.OctahedronGeometry(0.15, 1)), mainMat);
-        const ring = new THREE.Mesh(
-          trackGeo(new THREE.TorusGeometry(0.22, 0.025, 10, 24)),
-          accentMat
-        );
-        ring.rotation.x = Math.PI / 3;
+        const core = new THREE.Mesh(sharedOrbCoreGeo, mainMat);
+        const ring = new THREE.Mesh(sharedOrbRingGeo, accentMat);
         holder.add(core, ring);
       }
       return holder;
@@ -2316,6 +2333,7 @@ export default function ThreeStage({
     let elapsed = 0;
     let currentWeatherApplied = '';
     let rafId = null;
+    let waterFrameCounter = 0;
 
     const animate = (now) => {
       rafId = requestAnimationFrame(animate);
@@ -2415,7 +2433,10 @@ export default function ThreeStage({
       }
       waterPosAttr.needsUpdate = true;
       waterColorAttr.needsUpdate = true;
-      gridWaterGeo.computeVertexNormals();
+      waterFrameCounter++;
+      if (waterFrameCounter % 2 === 0) {
+        gridWaterGeo.computeVertexNormals();
+      }
 
       // --- Animate Stylized Cartoon Splashes on Stacked Clicks (Images 4 & 5) ---
       clickStack = Math.max(0, clickStack - dt * 3.8);
@@ -2722,3 +2743,5 @@ export default function ThreeStage({
     />
   );
 }
+
+export default React.memo(ThreeStage);

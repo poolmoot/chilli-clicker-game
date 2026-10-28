@@ -28,7 +28,7 @@ export function formatNumber(num) {
     if (abs < 10 && abs !== Math.floor(abs)) {
       return sign + abs.toFixed(1).replace(/\.0$/, '');
     }
-    return sign + Math.floor(abs).toString();
+    return sign + Math.floor(abs).toLocaleString('en-US');
   }
 
   for (let i = 0; i < SUFFIXES.length; i++) {
@@ -36,7 +36,11 @@ export function formatNumber(num) {
     if (abs >= value) {
       const scaled = abs / value;
       const decimals = scaled >= 100 ? 1 : 2;
-      return `${sign}${scaled.toFixed(decimals)}${symbol}`;
+      const formatted = scaled
+        .toFixed(decimals)
+        .replace(/\.00$/, '')
+        .replace(/(\.[1-9])0$/, '$1');
+      return `${sign}${formatted}${symbol}`;
     }
   }
 
@@ -68,8 +72,8 @@ export const EVOLUTIONS = [
     id: 'chill_bro',
     name: 'Dürüm-Fueled Beach Llama',
     icon: 'durum',
-    minVibes: 50000, // 50K
-    minLifetimeVibes: 50000,
+    minVibes: 20000, // 20K
+    minLifetimeVibes: 20000,
     title: 'Smells Like Garlic Sumac Rizz',
     desc: 'Equipped with 3D pixel sunglasses and fueled by 3 tight lamb dürüm wraps. Immune to vacation sunburn.',
     accent: '#38bdf8',
@@ -80,8 +84,8 @@ export const EVOLUTIONS = [
     id: 'tinfoil_capy',
     name: 'Mewing Cleopatra Mogger',
     icon: 'tinfoil_capy',
-    minVibes: 2500000, // 2.5M
-    minLifetimeVibes: 2500000,
+    minVibes: 400000, // 400K
+    minLifetimeVibes: 400000,
     title: 'Locked-In Canthal Tilt',
     desc: 'Maintains absolute mewing jawline discipline on the floatie. Intimidates seagull drone spies with pure aura.',
     accent: '#a3e635',
@@ -92,8 +96,8 @@ export const EVOLUTIONS = [
     id: 'wizard_capy',
     name: 'Cleopatra Jet Ski Sultan',
     icon: 'jet_ski',
-    minVibes: 150000000, // 150M
-    minLifetimeVibes: 150000000,
+    minVibes: 15000000, // 15M
+    minLifetimeVibes: 15000000,
     title: 'Blasting Turkish Phonk at 80 Knots',
     desc: 'Rides waves past the Red Tower with an enchanted wizard hat and golden life jacket. Splashes the entire Mediterranean.',
     accent: '#c084fc',
@@ -104,8 +108,8 @@ export const EVOLUTIONS = [
     id: 'baron_capy',
     name: 'Baklava Overlord Llama-illionaire',
     icon: 'baklava',
-    minVibes: 10000000000, // 10 Billion
-    minLifetimeVibes: 10000000000,
+    minVibes: 500000000, // 500M
+    minLifetimeVibes: 500000000,
     title: 'Too Sticky To Fail',
     desc: 'Bathed in 40 layers of Antep honey syrup and 24K edible gold foil. Owns 14 fake Gucci boutiques in the Grand Bazaar.',
     accent: '#fbbf24',
@@ -116,8 +120,8 @@ export const EVOLUTIONS = [
     id: 'cyber_capy',
     name: 'Alanya Castle Cyber-Pirate 2099',
     icon: 'cyber_capy',
-    minVibes: 1000000000000, // 1 Trillion
-    minLifetimeVibes: 1000000000000,
+    minVibes: 20000000000, // 20B
+    minLifetimeVibes: 20000000000,
     title: 'Neon Scimitar Overclock',
     desc: 'Synthesized cyber-llama overlooking the 13th-century fortress. Mines crypto vibes directly on the Red Tower blockchain.',
     accent: '#2dd4bf',
@@ -128,8 +132,8 @@ export const EVOLUTIONS = [
     id: 'biblical_capy',
     name: 'Biblically Accurate Maraş Dondurma God',
     icon: 'ice_cream',
-    minVibes: 100000000000000, // 100 Trillion
-    minLifetimeVibes: 100000000000000,
+    minVibes: 1000000000000, // 1 Trillion
+    minLifetimeVibes: 1000000000000,
     title: 'YOU WILL NEVER GET THE CONE',
     desc: 'Surrounded by spinning metal ice cream poles, interlocking seraphim floatie rings, and all-seeing eyes. Pure cosmic trickery.',
     accent: '#f43f5e',
@@ -271,17 +275,17 @@ export const CLICK_UPGRADES = [
     id: 'red_tower_cannonball',
     name: 'Red Tower Fortress Cannonball Dive',
     icon: 'pirate_ship',
-    baseCost: 2500000000, // 2.5B
+    baseCost: 450000000, // 450M
     costMult: 1.8,
     type: 'flat_click',
-    value: 18000000,
-    desc: 'Jumping off the 13th-century Seljuk castle battlements directly into the lagoon. +18M Vibes per click.',
+    value: 3500000,
+    desc: 'Jumping off the 13th-century Seljuk castle battlements directly into the lagoon. +3.5M Vibes per click.',
   },
   {
     id: 'brap_frenzy',
     name: 'Brap Taurine Pool Party Bomb',
     icon: 'frenzy_boost',
-    baseCost: 14000000000, // 14B
+    baseCost: 1800000000, // 1.8B
     costMult: 2.2,
     maxLevel: 10,
     type: 'frenzy_power',
@@ -292,41 +296,41 @@ export const CLICK_UPGRADES = [
     id: 'sultan_gold_hoof',
     name: 'Seljuk Sultan 24K Golden Horseshoe',
     icon: 'crown',
-    baseCost: 85000000000, // 85B
+    baseCost: 9000000000, // 9B
     costMult: 1.85,
     type: 'flat_click',
-    value: 320000000,
-    desc: 'Hand-hammered gold shoes engraved with ancient Ottoman water blessing runes. +320M Vibes per click.',
+    value: 45000000,
+    desc: 'Hand-hammered gold shoes engraved with ancient Ottoman water blessing runes. +45M Vibes per click.',
   },
   {
     id: 'cleopatra_mud',
     name: 'Cleopatra Mineral Mud Armor',
     icon: 'gem',
-    baseCost: 600000000000, // 600B
+    baseCost: 55000000000, // 55B
     costMult: 1.9,
     type: 'flat_click',
-    value: 2800000000,
-    desc: 'Thick volcanic mineral mud straight from Damlataş caves. +2.8B Vibes per click.',
+    value: 240000000,
+    desc: 'Thick volcanic mineral mud straight from Damlataş caves. +240M Vibes per click.',
   },
   {
     id: 'shisha_cloud',
     name: 'Apple-Mint Shisha Tornado Vapor',
     icon: 'cloud',
-    baseCost: 4500000000000, // 4.5T
+    baseCost: 350000000000, // 350B
     costMult: 1.95,
     type: 'flat_click',
-    value: 24000000000,
-    desc: 'Puffing thick minty clouds by the infinity pool. The Llama achieves omnipotence. +24B Vibes per click.',
+    value: 1400000000,
+    desc: 'Puffing thick minty clouds by the infinity pool. The Llama achieves omnipotence. +1.4B Vibes per click.',
   },
   {
     id: 'quantum_laser_doner',
     name: 'Quantum Laser Döner Carver 3000',
     icon: 'kebab',
-    baseCost: 35000000000000, // 35T
+    baseCost: 2500000000000, // 2.5T
     costMult: 2.0,
     type: 'flat_click',
-    value: 220000000000,
-    desc: 'Subatomic laser beams slicing döner meat at relativistic speeds. +220B Vibes per click.',
+    value: 8500000000,
+    desc: 'Subatomic laser beams slicing döner meat at relativistic speeds. +8.5B Vibes per click.',
   },
 ];
 
@@ -411,8 +415,8 @@ export const HELPERS = [
     id: 'pirate_ship',
     name: 'Red Tower Pirate Foam Party Ship',
     icon: 'pirate_ship',
-    baseCost: 480000000, // 480M
-    baseCps: 3800000,
+    baseCost: 45000000, // 45M
+    baseCps: 450000,
     color: '#a855f7',
     desc: 'Triple-decker wooden galleon blasting 2012 festival EDM while coating 300 tourists in industrial soap bubbles.',
   },
@@ -420,8 +424,8 @@ export const HELPERS = [
     id: 'damlatas_cave',
     name: 'Damlataş Healing Salt Cave Spa',
     icon: 'gem',
-    baseCost: 4200000000, // 4.2B
-    baseCps: 29000000,
+    baseCost: 280000000, // 280M
+    baseCps: 2400000,
     color: '#10b981',
     desc: '15,000-year-old stalactites and 95% humidity. Breathing the mineral air cures all mundane stress.',
   },
@@ -429,8 +433,8 @@ export const HELPERS = [
     id: 'teleferik_system',
     name: 'Alanya Teleferik Cableway Grid',
     icon: 'cable_car',
-    baseCost: 38000000000, // 38B
-    baseCps: 220000000,
+    baseCost: 2100000000, // 2.1B
+    baseCps: 16000000,
     color: '#06b6d4',
     desc: 'Hundreds of glass gondolas soaring up to the castle crags carrying legions of selfie-taking vibe seekers.',
   },
@@ -438,8 +442,8 @@ export const HELPERS = [
     id: 'tea_monolith',
     name: 'Turkish Rize Çay Megaplant',
     icon: 'tea',
-    baseCost: 350000000000, // 350B
-    baseCps: 1800000000,
+    baseCost: 15000000000, // 15B
+    baseCps: 110000000,
     color: '#ef4444',
     desc: 'Industrial brass samovars brewing 50,000 liters of scalding black tea every second. Absolute national pride.',
   },
@@ -447,8 +451,8 @@ export const HELPERS = [
     id: 'superyacht_fleet',
     name: 'Mediterranean Superyacht Fleet',
     icon: 'jet_ski',
-    baseCost: 4000000000000, // 4T
-    baseCps: 16000000000,
+    baseCost: 120000000000, // 120B
+    baseCps: 750000000,
     color: '#fbbf24',
     desc: 'Golden superyachts anchored off Cleopatra headland with helipads, jet skis, and iced champagne.',
   },
@@ -456,8 +460,8 @@ export const HELPERS = [
     id: 'salt_crypto_vault',
     name: 'Subterranean Salt Cave Crypto Vault',
     icon: 'tinfoil_capy',
-    baseCost: 55000000000000, // 55T
-    baseCps: 180000000000,
+    baseCost: 950000000000, // 950B
+    baseCps: 5200000000,
     color: '#8b5cf6',
     desc: 'Mining Proof-of-Chill tokens cooled by ancient stalactite mineral springs beneath the Seljuk fortress.',
   },
@@ -465,8 +469,8 @@ export const HELPERS = [
     id: 'cosmic_bazaar',
     name: 'Cosmic Sultan Hover-Bazaar',
     icon: 'crown',
-    baseCost: 800000000000000, // 800T
-    baseCps: 2200000000000,
+    baseCost: 8000000000000, // 8T
+    baseCps: 38000000000,
     color: '#f43f5e',
     desc: 'Interdimensional flying bazaars selling döner and baklava to alien tourists across 12 dimensions.',
   },
@@ -474,8 +478,8 @@ export const HELPERS = [
     id: 'sun_dyson',
     name: 'Dyson Sphere Mediterranean Sun Engine',
     icon: 'sun',
-    baseCost: 15000000000000000, // 15Qa
-    baseCps: 35000000000000,
+    baseCost: 65000000000000, // 65T
+    baseCps: 280000000000,
     color: '#f59e0b',
     desc: 'Enclosing the sun in solar mirrors to direct 100% of solar radiation exclusively to the Alanya infinity pool.',
   },
@@ -491,16 +495,16 @@ export const HELPERS = [
  * - Rebirthing resets the current run vibes and advances to the next tier!
  */
 export const REBIRTH_THRESHOLDS = [
-  5000000, // Rebirth 1: 5M
-  30000000, // Rebirth 2: 30M
-  250000000, // Rebirth 3: 250M
-  2500000000, // Rebirth 4: 2.5B
-  35000000000, // Rebirth 5: 35B
-  500000000000, // Rebirth 6: 500B
-  8000000000000, // Rebirth 7: 8T
-  150000000000000, // Rebirth 8: 150T
-  2500000000000000, // Rebirth 9: 2.5Qa
-  50000000000000000, // Rebirth 10: 50Qa
+  500000, // Rebirth 1: 500K
+  4000000, // Rebirth 2: 4M
+  35000000, // Rebirth 3: 35M
+  300000000, // Rebirth 4: 300M
+  2500000000, // Rebirth 5: 2.5B
+  22000000000, // Rebirth 6: 22B
+  180000000000, // Rebirth 7: 180B
+  1500000000000, // Rebirth 8: 1.5T
+  12000000000000, // Rebirth 9: 12T
+  100000000000000, // Rebirth 10: 100T
 ];
 
 export function getRebirthThreshold(rebirthCount = 0) {

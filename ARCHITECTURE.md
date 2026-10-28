@@ -80,10 +80,23 @@ The repository includes three complete agent skill suites under `.agents/skills/
 ### 4.6 Alanya Street Food, Brainrot Humor & 16 Helper Tiers
 - **18 Click Upgrades**: From Maraş Dondurma Rizz to Mewing at Cleopatra Beach, 40-Layer Pistachio Baklava, Grand Bazaar Genuine Fake Rolex, and Alanya Teleferik High-Altitude Mog.
 - **16 Helper Enterprises**: From rotating Döner spits and 5 AM Dürüm shacks to Dimçay river picnic rafts, Red Tower pirate foam party ships, and Seljuk cosmic sultan hover-bazaars.
-- **Multi-Hour Progression Curve**: Stretches idle economy through quadrillions ($10^{15}-10^{18}$), preventing fast max-outs.
+- **Multi-Hour Progression Curve**: Balanced idle economy scaling smoothly into millions, billions, and trillions without runaway integer overflow.
 
 ### 4.7 Alanya VIP Lagoon Rebirth System (Strict Single Non-Stacking Rebirths)
 - All references across state, UI, badges, modals, and toasts strictly use **Rebirth** (no "Ascend").
 - **Strict Single Rebirth Per Run**: Players can only earn **exactly +1 Rebirth token at a time**. Rebirth tokens never stack to +2, +3, etc. in a single run.
-- **Determined Milestone Threshold**: Each rebirth tier has a determined requirement via `getRebirthThreshold(rebirthCount)` (5M for Rebirth 1, 30M for Rebirth 2, 250M for Rebirth 3, scaling upward).
+- **Determined Milestone Threshold**: Each rebirth tier has a determined requirement via `getRebirthThreshold(rebirthCount)` (500K for Rebirth 1, 4M for Rebirth 2, 35M for Rebirth 3, scaling upward).
 - **Run Vibes Reset**: Earning vibes past the determined threshold in a life does not grant extra rebirth value. Performing the Rebirth resets `runVibes` to 0, grants +1 Golden Citrus (+25% Global Vibes), and advances to the next Rebirth tier.
+
+### 4.8 Senior Game Developer Performance Engineering & Readable Economy
+- **Scalable, Readable Economy**:
+  - Re-anchored base costs and CPS so numbers scale smoothly from tens of vibes into millions, billions, and low trillions ($10^9-10^{12}$), remaining strictly within `Number.MAX_SAFE_INTEGER` ($9 \times 10^{15}$) and avoiding floating-point precision loss and exponential notation.
+  - Number formatter trims redundant trailing zeroes (`1.2M` instead of `1.20M`, `1M` instead of `1.00M`) and constrains the score counter with fluid clamp typography and overflow protection (`truncate max-w-[80%]`).
+- **WebGL & GPU Buffer Health**:
+  - Reduced dynamic water mesh from 52×52 (2,704 vertices) to 34×34 (1,156 vertices), slashing per-frame vertex processing by 57%.
+  - Throttled water vertex normal recomputation to every 2nd frame (`frameCount % 2 === 0`), cutting 50% of CPU normal calculation load.
+  - Eliminated helper orbiter memory leaks: static shared geometries and cached standard materials are reused across all helper orbiters, eliminating GPU buffer allocations and garbage collection stalls.
+- **Decoupled React & 60 FPS Game Loop**:
+  - Wrapped `ThreeStage` and `ShopPanel` in `React.memo` to eliminate unnecessary component re-renders when only money counters tick.
+  - Optimized the React tick rate from 20Hz (50ms) to 10Hz (100ms), halving React re-rendering CPU overhead while maintaining completely fluid visual score progression.
+  - Capped floating bubble particle queues to prevent DOM bloat during high click rates and frenzy bursts.

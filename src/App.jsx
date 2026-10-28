@@ -510,7 +510,7 @@ export default function App() {
       const isFrenzy = frenzyRemaining > 0;
 
       setFloatingTexts((prev) => [
-        ...prev.slice(-18),
+        ...prev.slice(-5),
         {
           id,
           x: x + jitterX,
@@ -523,8 +523,8 @@ export default function App() {
         },
       ]);
 
-      // Spawn 4-6 splash micro-bubble burst particles around the click!
-      const burstCount = isCrit ? 6 : 4;
+      // Spawn 2-4 splash micro-bubble burst particles around the click!
+      const burstCount = isCrit ? 4 : 2;
       const newParticles = [];
       const particleBg = isGolden
         ? 'bg-amber-300'
@@ -536,19 +536,19 @@ export default function App() {
 
       for (let i = 0; i < burstCount; i++) {
         const angle = (i / burstCount) * Math.PI * 2 + Math.random() * 0.4;
-        const dist = 24 + Math.random() * 32;
+        const dist = 20 + Math.random() * 26;
         newParticles.push({
           id: id + i + 1,
           x,
           y,
           vx: Math.cos(angle) * dist,
           vy: Math.sin(angle) * dist,
-          size: 6 + Math.random() * 6,
+          size: 5 + Math.random() * 5,
           color: particleBg,
         });
       }
 
-      setSplashParticles((prev) => [...prev.slice(-24), ...newParticles]);
+      setSplashParticles((prev) => [...prev.slice(-8), ...newParticles]);
 
       setTimeout(() => {
         setFloatingTexts((prev) => prev.filter((item) => item.id !== id));
@@ -625,11 +625,11 @@ export default function App() {
     ]
   );
 
-  // --- Main 20Hz Game Tick (CPS accumulation, Fever decay, Buff & Skill timers, Splashstorm) ---
+  // --- Main Optimized 10Hz Game Tick (CPS accumulation, Fever decay, Buff & Skill timers, Splashstorm) ---
   const clickStormTickRef = useRef(0);
   useEffect(() => {
     const interval = setInterval(() => {
-      const dt = 0.05; // 50ms tick
+      const dt = 0.1; // 100ms tick for 50% reduced main-thread load
       if (stats.totalCps > 0) {
         const gain = stats.totalCps * dt;
         setVibes((v) => v + gain);
@@ -678,15 +678,12 @@ export default function App() {
 
       // Splashstorm auto-booper (10 boops/sec when active)
       if ((skillTimers.auto_storm?.activeRem || 0) > 0) {
-        clickStormTickRef.current += 1;
-        if (clickStormTickRef.current % 2 === 0) {
-          setExternalClickPulse(Date.now());
-          const stageX = window.innerWidth * 0.75;
-          const stageY = window.innerHeight * 0.52;
-          handleMascotClick(stageX, stageY);
-        }
+        setExternalClickPulse(Date.now());
+        const stageX = window.innerWidth * 0.75;
+        const stageY = window.innerHeight * 0.52;
+        handleMascotClick(stageX, stageY);
       }
-    }, 50);
+    }, 100);
 
     return () => clearInterval(interval);
   }, [stats.totalCps, skillTimers.auto_storm?.activeRem, handleMascotClick]);
@@ -1081,8 +1078,8 @@ export default function App() {
                 <GameIcon name="yuzu" size={36} />
               </div>
 
-              {/* Bold Black-Outlined White Score Counter (Fluid clamp typography) */}
-              <span className="font-display font-black text-[clamp(2rem,1.4rem+2.2vw,3.25rem)] tracking-tight text-white font-mono-num leading-none [text-shadow:0_3px_0_#2e1805,0_-1.5px_0_#2e1805,2px_0_0_#2e1805,-2px_0_0_#2e1805,0_5px_10px_rgba(0,0,0,0.45)]">
+              {/* Bold Black-Outlined White Score Counter (Fluid clamp typography, overflow-protected) */}
+              <span className="font-display font-black text-[clamp(1.6rem,1.2rem+1.8vw,2.75rem)] tracking-tight text-white font-mono-num leading-none truncate max-w-[80%] [text-shadow:0_3px_0_#2e1805,0_-1.5px_0_#2e1805,2px_0_0_#2e1805,-2px_0_0_#2e1805,0_5px_10px_rgba(0,0,0,0.45)]">
                 {formatNumber(vibes)}
               </span>
             </div>
